@@ -1,8 +1,8 @@
 Package: toolkit
-Title: IMCR toolkit for the Information Management Code Registry (IMCR)
+Title: A toolkit for IMCR maintainers
 Version: 0.0.0.9000
 Authors@R: person("Colin", "Smith", email = "colin.smith@wisc.edu", role = c("aut", "cre"))
-Description: A toolkit toolkit for the Information Management Code Registry (IMCR)
+Description: A toolkit for IMCR maintainers
 Depends: R (>= 3.4.0)
 License: What license is it under?
 Encoding: UTF-8
