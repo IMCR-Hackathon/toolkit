@@ -1,15 +1,5 @@
 # Calls to the IMCR OntoSoft API
 
-# Initialize workspace --------------------------------------------------------
-
-# rm(list = ls())
-# library(jsonlite)
-# library(httr)
-# library(xml2)
-# library(ggplot2)
-# library(scales)
-# library(dplyr)
-
 # Get JSON --------------------------------------------------------------------
 
 # Get JSON for each software
