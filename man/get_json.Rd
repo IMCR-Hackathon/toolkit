@@ -4,20 +4,21 @@
 \alias{get_json}
 \title{Get JSON metadata for all portal software}
 \usage{
-get_json(url)
+get_json(ids)
 }
 \arguments{
-\item{url}{(character) Portal URL}
+\item{ids}{(character) OntoSoft software identifiers.}
 }
 \value{
-(list) JSON metadata for all portal software
+(list) JSON metadata for each identifier.
 }
 \description{
 Get JSON metadata for all portal software
 }
 \examples{
 \dontrun{
-json <- get_json('http://imcr.ontosoft.org/repository/software')
+ids <- get_ids('http://imcr.ontosoft.org/repository/software')
+json <- get_json(ids)
 }
 
 }
