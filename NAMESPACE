@@ -2,7 +2,10 @@
 
 export(get_ids)
 export(get_json)
+export(get_software)
 export(list_creators)
 export(list_keywords)
 export(list_language)
+export(login)
 export(plot_languages)
+export(set_keywords)
