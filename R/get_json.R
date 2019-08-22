@@ -16,5 +16,7 @@
 #'
 get_json <- function(ids){
   json <- lapply(ids, jsonlite::fromJSON)
+  names(json) <- unlist(
+    lapply(seq_along(json), function(x){json[[x]][['label']]}))
   return(json)
 }
