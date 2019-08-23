@@ -22,8 +22,7 @@ set_SoftwareCategory(software, keywords, action, json, session.string)
 (json) Updated JSON object and a JSON file written to \code{tempdir()}.
 }
 \description{
-Add or remove software category keywords defined in the IMCR Controlled
-Vocabulary.
+Add or remove software category keywords.
 }
 \examples{
 \dontrun{

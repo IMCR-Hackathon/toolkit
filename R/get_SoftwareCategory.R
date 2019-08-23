@@ -1,5 +1,7 @@
 #' Get Software Category
 #'
+#' Get software category keywords.
+#'
 #' @param json
 #'   (list) Software metadata in JSON format
 #'

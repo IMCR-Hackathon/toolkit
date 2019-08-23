@@ -1,7 +1,6 @@
 #' Set Software Category
 #'
-#' Add or remove software category keywords defined in the IMCR Controlled
-#' Vocabulary.
+#' Add or remove software category keywords.
 #'
 #' @param software
 #'   (character) Software name
@@ -31,6 +30,7 @@ set_SoftwareCategory <- function(software, keywords, action, json, session.strin
   categories <- metadata[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]
 
   metadata <- json[names(json) == "R packages: parsedate  and methods are required for qaqcTimeDate_functions.R "]
+
   if (action == 'add'){
     new_categories <- data.frame(
       rep('EnumerationEntity', length(keywords)),
@@ -48,14 +48,19 @@ set_SoftwareCategory <- function(software, keywords, action, json, session.strin
 
   }
 
-  t <- unlist(metadata)
-  tt <- unname(metadata)
-  jsonlite::write_json(metadata[[1]], path =  '/Users/csmith/Desktop/testing.json')
+  # write to file
+  jsonlite::write_json(
+    metadata,
+    path = '/Users/csmith/Desktop/testing.json',
+    auto_unbox = TRUE
+  )
 
+  # upload to imcr
   r <- httr::PUT(
     url = metadata[[1]]$id,
     body = upload_file(paste0(tempdir(), '/ontosoftjson.JSON')),
-    add_headers(`X-Ontosoft-Session` = session.string))
+    add_headers(`X-Ontosoft-Session` = session.string)
+  )
 
   return(ids)
 }

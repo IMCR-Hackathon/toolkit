@@ -20,8 +20,7 @@ update_SoftwareCategory(software, json)
 (json) Updated JSON object and a JSON file written to \code{tempdir()}.
 }
 \description{
-Update all software category keywords to the current structure of the IMCR
-Controlled Vocabulary.
+Update software category keywords according to a controlled vocabulary.
 }
 \examples{
 \dontrun{

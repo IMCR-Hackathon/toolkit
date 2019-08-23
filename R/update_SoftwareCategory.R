@@ -1,7 +1,6 @@
 #' Update software category
 #'
-#' Update all software category keywords to the current structure of the IMCR
-#' Controlled Vocabulary.
+#' Update software category keywords according to a controlled vocabulary.
 #'
 #' @param software
 #'   (character) Software name

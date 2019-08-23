@@ -13,7 +13,7 @@ get_SoftwareCategory(json)
 (list) Software keywords
 }
 \description{
-Get Software Category
+Get software category keywords.
 }
 \examples{
 \dontrun{
