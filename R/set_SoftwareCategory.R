@@ -48,12 +48,19 @@ set_SoftwareCategory <- function(software, keywords, action, json, session.strin
 
   }
 
+  metadata <- json[names(json) == software]
+  metadata[[1]]$provenance <- list()
+  metadata[[1]]$permission <- list()
+  metadata[[1]]$id <- ''
+  metadata[[1]]$name <- ''
   # write to file
   jsonlite::write_json(
-    metadata,
+    metadata[[1]],
     path = '/Users/csmith/Desktop/testing.json',
     auto_unbox = TRUE
   )
+  # validate
+  jsonlite::validate(jsonlite::toJSON(metadata[[1]]))
 
   # upload to imcr
   r <- httr::PUT(
