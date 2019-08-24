@@ -10,21 +10,28 @@ update_software_category(software, json)
 \item{software}{(character) Software name}
 
 \item{json}{(list) JSON of all OntoSoft Portal software. Create this list with
-\code{get_json()}.}
+\code{get_all_software()}.}
 
 \item{keywords}{(character) New keywords}
 
-\item{action}{(character) "add" or "remove" software category}
+\item{method}{(character) "add" (add new keyword), "remove" (remove existing keyword),
+or "align" (align with a controlled vocabulary.}
 }
 \value{
 (json) Updated JSON object and a JSON file written to \code{tempdir()}.
 }
 \description{
-Update software category keywords according to a controlled vocabulary.
+Add, remove, and align software category keywords.
 }
 \examples{
 \dontrun{
-update_software_category()
+# Add new keyword and all broader terms
+update_software_category(
+  'arrow',
+  c('workflows', 'loading'),
+  'add',
+  json
+)
 }
 
 }

@@ -1,20 +1,20 @@
 #' Get JSON metadata for all portal software
 #'
-#' @param ids
-#'   (character) OntoSoft software identifiers.
+#' @param url
+#'   (character) OntoSoft portal URL.
 #'
 #' @return
-#'   (list) JSON metadata for each identifier.
+#'   (list) Named list of software JSON metadata.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' ids <- get_ids('http://imcr.ontosoft.org/repository/software')
-#' json <- get_json(ids)
+#' json <- get_json("http://imcr.ontosoft.org/repository/software")
 #' }
 #'
-get_json <- function(ids){
+get_json <- function(url){
+  ids <- jsonlite::fromJSON(url)$id
   json <- lapply(ids, jsonlite::fromJSON)
   names(json) <- unlist(
     lapply(seq_along(json), function(x){json[[x]][['label']]}))
