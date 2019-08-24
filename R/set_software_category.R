@@ -24,7 +24,7 @@
 #' set_keyword('arrow', c('quality control', 'import'))
 #' }
 #'
-set_SoftwareCategory <- function(software, keywords, action, json, session.string){
+set_software_category <- function(software, keywords, action, json, session.string){
 
   metadata <- json[names(json) == software]
   categories <- metadata[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]

@@ -16,7 +16,7 @@
 #' parse_keywords(json)
 #' }
 #'
-get_SoftwareCategory <- function(json){
+get_software_category <- function(json){
   return(
     lapply(
       seq_along(json),

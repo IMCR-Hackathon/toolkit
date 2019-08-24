@@ -22,7 +22,7 @@
 #' update_software_category()
 #' }
 #'
-update_SoftwareCategory <- function(software, json){
+update_software_category <- function(software, json){
   r <- json[names(json) == software]
   return(r)
 }
