@@ -14,7 +14,7 @@ information in the console.}
 information in the console.}
 }
 \value{
-(character) Session string
+(character) Session string.
 }
 \description{
 Login
