@@ -49,8 +49,11 @@ set_SoftwareCategory <- function(software, keywords, action, json, session.strin
   }
 
   metadata <- json[names(json) == software]
-  metadata[[1]]$provenance <- list()
-  metadata[[1]]$permission <- list()
+  metadata[[1]]$value[['http://ontosoft.org/software#hasShortDescription']]
+  # metadata[[1]]$provenance <- list()
+  metadata[[1]]$provenance <- NULL
+  # metadata[[1]]$permission <- list()
+  metadata[[1]]$permission <- NULL
   metadata[[1]]$id <- ''
   metadata[[1]]$name <- ''
   # write to file
