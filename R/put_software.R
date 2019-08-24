@@ -2,8 +2,6 @@
 #'
 #' @param software.name
 #'   (character) Software name
-#' @param session.string
-#'   (character) Key generated with \code{login()}.
 #' @param path
 #'   (list) Path to software JSON.
 #'
@@ -18,8 +16,18 @@
 #' put_software('arrow', sstr, '/path/to/software')
 #' }
 #'
-put_software <- function(software.name, session.string, path){
+put_software <- function(software.name, path){
 
+  # Check for session string
+  if (!exists("imcr_session_string")){
+    stop(
+      paste0(
+        "The object 'imcr_session_string' is missing from the global environment.",
+        "Create it with 'login()."
+      )
+    )
+  }
+  
   # Get software JSON
   metadata <- jsonlite::read_json(paste0(path, '/', software.name, '.json'))
 
@@ -27,7 +35,7 @@ put_software <- function(software.name, session.string, path){
   r <- httr::PUT(
     url = metadata[[1]]$id,
     body = upload_file(paste0(path, '/', software.name, '.json')),
-    add_headers(`X-Ontosoft-Session` = session.string)
+    add_headers(`X-Ontosoft-Session` = imcr_session_string)
   )
 
   # Return status code

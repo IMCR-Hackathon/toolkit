@@ -4,12 +4,10 @@
 \alias{post_software}
 \title{Add new software}
 \usage{
-post_software(software.name, session.string, path)
+post_software(software.name, path)
 }
 \arguments{
 \item{software.name}{(character) Software name}
-
-\item{session.string}{(character) Key generated with \code{login()}.}
 
 \item{path}{(list) Path to software JSON.}
 }

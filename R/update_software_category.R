@@ -1,6 +1,6 @@
 #' Add/remove software category keywords
 #'
-#' Add/remove only the narrowest terms, broader terms are automatically 
+#' Only the narrowest terms need to be input, broader terms are automatically 
 #' added/removed.
 #'
 #' @param action
@@ -10,11 +10,9 @@
 #' @param keywords
 #'   (character) Keywords from the 
 #'   \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.
-#' @param session.string
-#'   (character) Key generated with \code{login()}.
 #'
 #' @return
-#'   (list) Updated software JSON represented as a list.
+#'   (list) Updated software JSON as a list object.
 #'   (.json file) Updated software JSON written to 
 #'   \code{paste0(tempdir(), "/", software, ".json")}.
 #'
@@ -22,40 +20,50 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Get all software JSON from IMCR Portal
-#' json <- get_json("http://imcr.ontosoft.org/repository/software")
+#' # Get all IMCR JSON
+#' get_imcr_json()
 #' 
-#' # Get session string
-#' sstr <- login()
+#' # Login
+#' login()
 #' 
 #' # Add software category keywords
-#' update_software_category("add", 'arrow', c('quality control', 'import'), sstr)
+#' update_software_category("add", 'arrow', c('quality control', 'import'))
 #' 
 #' # Remove software category keywords
-#' update_software_category("remove", 'arrow', c('quality control', 'import'), sstr)
+#' update_software_category("remove", 'arrow', c('quality control', 'import'))
 #' }
 #'
-update_software_category <- function(action, software, keywords, session.string){
+update_software_category <- function(action, software, keywords){
   
-  # Check for json
-  if (!exists("json") | !is.list(json)){
+  # Check for session string
+  if (!exists("imcr_session_string")) {
     stop(
       paste0(
-        "The object 'json' is missing from the global environment.",
+        "The object 'imcr_session_string' is missing from the global environment.",
+        "Create it with 'login()."
+      )
+    )
+  }
+  
+  # Check for imcr_json object
+  if (!exists("imcr_json") | !is.list(imcr_json)) {
+    stop(
+      paste0(
+        "The object 'imcr_json' is missing from the global environment.",
         "Create it with 'get_json()."
       )
     )
   }
   
   # Get software categories
-  metadata <- json[names(json) == software]
-  categories <- metadata[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]
+  json <- imcr_json[names(imcr_json) == software]
+  cats <- json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]
   
 
-  # Add/remove software categories
-  if (action == 'add'){
+  # Add/remove user specified keywords
+  if (action == 'add') {
     
-    new_categories <- data.frame(
+    newcats <- data.frame(
       rep('EnumerationEntity', length(keywords)),
       rep('', length(keywords)),
       rep('', length(keywords)),
@@ -64,25 +72,27 @@ update_software_category <- function(action, software, keywords, session.string)
       keywords,
       stringsAsFactors = FALSE
     )
-    names(new_categories) <- c("@type", "id", "name", "type", "label", "value")
-    categories <- rbind(categories, new_categories)
-    metadata[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- categories
+    names(newcats) <- c("@type", "id", "name", "type", "label", "value")
+    cats <- rbind(cats, newcats)
+    json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
     
-  } else if (action == 'remove'){
+  } else if (action == 'remove') {
     
-    new_categories <- categories
-    new_categories <- new_categories[new_categories$label != keywords]
-    if (all(dim(new_categories) == c(2,0))){
-      metadata[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
+    newcats <- cats
+    newcats <- newcats[newcats$label != keywords]
+    if (all(dim(newcats) == c(2,0))) {
+      json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
     } else {
-      metadata[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- new_categories
+      json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- newcats
     }
     
   }
   
+  # Add/remove broader keywords
+  
   # Write to file
   jsonlite::write_json(
-    metadata[[1]],
+    json[[1]],
     path = paste0(tempdir(), "/", software, ".json"),
     auto_unbox = TRUE
   )
@@ -90,11 +100,10 @@ update_software_category <- function(action, software, keywords, session.string)
   # Upload
   put_software(
     software, 
-    session.string, 
+    imcr_session_string, 
     paste0(tempdir(), "/", software, ".json")
   )
 
-  # Return
-  return(metadata[[1]])
+  return(json[[1]])
   
 }

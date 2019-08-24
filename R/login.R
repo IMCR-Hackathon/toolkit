@@ -37,7 +37,7 @@ login <- function(user.name = NULL, user.pass = NULL){
   )
 
   # Get session string
-  imcr_session_sting <<- jsonlite::fromJSON(
+  imcr_session_string <<- jsonlite::fromJSON(
     httr::content(r, as = 'text', encoding = 'UTF-8')
   )$sessionString
 

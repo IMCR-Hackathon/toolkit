@@ -4,15 +4,10 @@
 \alias{delete_software}
 \title{Delete software from portal}
 \usage{
-delete_software(software.name, session.string, json)
+delete_software(software.name)
 }
 \arguments{
 \item{software.name}{(character) Software name}
-
-\item{session.string}{(character) Key generated with \code{login()}.}
-
-\item{json}{(list) JSON of all portal software. Create this list with
-\code{get_json()}.}
 }
 \value{
 (message) Status message of operation.
@@ -22,8 +17,8 @@ Delete software from portal
 }
 \examples{
 \dontrun{
-sstr <- login()
-delete_software('arrow', sstr)
+login()
+delete_software('arrow')
 }
 
 }

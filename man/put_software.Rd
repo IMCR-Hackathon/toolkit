@@ -4,12 +4,10 @@
 \alias{put_software}
 \title{Update software}
 \usage{
-put_software(software.name, session.string, path)
+put_software(software.name, path)
 }
 \arguments{
 \item{software.name}{(character) Software name}
-
-\item{session.string}{(character) Key generated with \code{login()}.}
 
 \item{path}{(list) Path to software JSON.}
 }

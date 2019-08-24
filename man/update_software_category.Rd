@@ -4,7 +4,7 @@
 \alias{update_software_category}
 \title{Add/remove software category keywords}
 \usage{
-update_software_category(action, software, keywords, session.string)
+update_software_category(action, software, keywords)
 }
 \arguments{
 \item{action}{(character) Action to perform ("add" or "remove")}
@@ -13,31 +13,29 @@ update_software_category(action, software, keywords, session.string)
 
 \item{keywords}{(character) Keywords from the 
 \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.}
-
-\item{session.string}{(character) Key generated with \code{login()}.}
 }
 \value{
-(list) Updated software JSON represented as a list.
+(list) Updated software JSON as a list object.
   (.json file) Updated software JSON written to 
   \code{paste0(tempdir(), "/", software, ".json")}.
 }
 \description{
-Add/remove only the narrowest terms, broader terms are automatically 
+Only the narrowest terms need to be input, broader terms are automatically 
 added/removed.
 }
 \examples{
 \dontrun{
-# Get all software JSON from IMCR Portal
-json <- get_json("http://imcr.ontosoft.org/repository/software")
+# Get all IMCR JSON
+get_imcr_json()
 
-# Get session string
-sstr <- login()
+# Login
+login()
 
 # Add software category keywords
-update_software_category("add", 'arrow', c('quality control', 'import'), sstr)
+update_software_category("add", 'arrow', c('quality control', 'import'))
 
 # Remove software category keywords
-update_software_category("remove", 'arrow', c('quality control', 'import'), sstr)
+update_software_category("remove", 'arrow', c('quality control', 'import'))
 }
 
 }
