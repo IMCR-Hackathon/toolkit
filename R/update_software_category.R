@@ -8,10 +8,7 @@
 #'   (character) New keywords
 #' @param method
 #'   (character) "add" (add new keyword), "remove" (remove existing keyword),
-#'   or "align" (align with a controlled vocabulary.
-#' @param json
-#'   (list) JSON of all OntoSoft Portal software. Create this list with
-#'   \code{get_all_software()}.
+#'   or "align" (align with a controlled vocabulary).
 #'
 #' @return
 #'   (json) Updated JSON object and a JSON file written to \code{tempdir()}.

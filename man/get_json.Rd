@@ -4,7 +4,7 @@
 \alias{get_json}
 \title{Get JSON metadata for all portal software}
 \usage{
-get_json(url)
+get_json(url = "http://imcr.ontosoft.org/repository/software")
 }
 \arguments{
 \item{url}{(character) OntoSoft portal URL.}
