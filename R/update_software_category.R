@@ -1,21 +1,22 @@
 #' Add/remove software category keywords
 #'
-#' Only the narrowest terms need to 
-#' be added, \code{align_software_category()} automatically adds and removes
-#' broader terms of a specified vocabulary.
+#' Add/remove only the narrowest terms, broader terms are automatically 
+#' added/removed.
 #'
 #' @param action
-#'   (character) "add" or "remove" software category keywords
+#'   (character) Action to perform ("add" or "remove")
 #' @param software
 #'   (character) Software name
 #' @param keywords
-#'   (character) Software category keywords
+#'   (character) Keywords from the 
+#'   \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.
 #' @param session.string
 #'   (character) Key generated with \code{login()}.
 #'
 #' @return
-#'   (json file) Software JSON file written to 
-#'   \code{paste0(tempdir(), '/', software)}.
+#'   (list) Updated software JSON represented as a list.
+#'   (.json file) Updated software JSON written to 
+#'   \code{paste0(tempdir(), "/", software, ".json")}.
 #'
 #' @export
 #'
@@ -28,13 +29,13 @@
 #' sstr <- login()
 #' 
 #' # Add software category keywords
-#' set_software_category("add", 'arrow', c('quality control', 'import'), sstr)
+#' update_software_category("add", 'arrow', c('quality control', 'import'), sstr)
 #' 
 #' # Remove software category keywords
-#' set_software_category("remove", 'arrow', c('quality control', 'import'), sstr)
+#' update_software_category("remove", 'arrow', c('quality control', 'import'), sstr)
 #' }
 #'
-set_software_category <- function(action, software, keywords, session.string){
+update_software_category <- function(action, software, keywords, session.string){
   
   # Check for json
   if (!exists("json") | !is.list(json)){
