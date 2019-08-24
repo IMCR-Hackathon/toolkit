@@ -11,15 +11,13 @@
 #'   information in the console.
 #'
 #' @return
-#'   (character) Session string.
+#'   (character) Session string object named "imcr_session_string" and created
+#'   in the global environment for use with other \code{toolkit} functions.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Enter credentials to function
-#' login('myname', 'mypass')
-#' # Have credentials requested in the console
 #' login()
 #' }
 #'
@@ -39,10 +37,12 @@ login <- function(user.name = NULL, user.pass = NULL){
   )
 
   # Get session string
-  sstr <- jsonlite::fromJSON(
+  imcr_session_sting <<- jsonlite::fromJSON(
     httr::content(r, as = 'text', encoding = 'UTF-8')
   )$sessionString
 
-  return(sstr)
+  # Notify user
+  message("You are now logged in.")
+  
 
 }

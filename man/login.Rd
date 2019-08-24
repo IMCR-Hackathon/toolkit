@@ -14,16 +14,14 @@ information in the console.}
 information in the console.}
 }
 \value{
-(character) Session string.
+(character) Session string object named "imcr_session_string" and created
+  in the global environment for use with other \code{toolkit} functions.
 }
 \description{
 Login
 }
 \examples{
 \dontrun{
-# Enter credentials to function
-login('myname', 'mypass')
-# Have credentials requested in the console
 login()
 }
 
