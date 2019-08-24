@@ -20,10 +20,15 @@
 #'
 put_software <- function(software.name, session.string, path){
 
+  # Get software JSON
+  metadata <- jsonlite::read_json(paste0(path, '/', software.name, '.json'))
+
   # Update software
-  r <- httr::DELETE(
+  r <- httr::PUT(
     url = metadata[[1]]$id,
-    add_headers(`X-Ontosoft-Session` = session.string))
+    body = upload_file(paste0(path, '/', software.name, '.json')),
+    add_headers(`X-Ontosoft-Session` = session.string)
+  )
 
   # Return status code
   message('Status code: ', paste0(r$status_code))
