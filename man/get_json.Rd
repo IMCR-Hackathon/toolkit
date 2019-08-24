@@ -10,14 +10,16 @@ get_json(url = "http://imcr.ontosoft.org/repository/software")
 \item{url}{(character) OntoSoft portal URL.}
 }
 \value{
-(list) Named list of software JSON metadata.
+(list) Named list of JSON metadata for all software in a specified 
+  OntoSoft Portal. This object is named "json" and is returned to the global
+  environment for use with other toolkit functions.
 }
 \description{
 Get JSON metadata for all portal software
 }
 \examples{
 \dontrun{
-json <- get_json("http://imcr.ontosoft.org/repository/software")
+get_json("http://imcr.ontosoft.org/repository/software")
 }
 
 }
