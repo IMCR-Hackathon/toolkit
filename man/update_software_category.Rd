@@ -16,7 +16,7 @@ update_software_category(action, software, keywords)
 }
 \value{
 (list) Updated software JSON as a list object.
-  (.json file) Updated software JSON written to 
+  (.json file) Updated software JSON written to the IMCR Portal, and to
   \code{paste0(tempdir(), "/", software, ".json")}.
 }
 \description{
