@@ -2,23 +2,24 @@
 % Please edit documentation in R/delete_software.R
 \name{delete_software}
 \alias{delete_software}
-\title{Delete software from portal}
+\title{Delete software from the IMCR Portal}
 \usage{
-delete_software(software.name)
+delete_software(name)
 }
 \arguments{
-\item{software.name}{(character) Software name}
+\item{name}{(character) Name of software}
 }
 \value{
-(message) Status message of operation.
+(message) Status message of DELETE operation.
 }
 \description{
-Delete software from portal
+Delete software from the IMCR Portal
 }
 \examples{
 \dontrun{
+get_imcr_json()
 login()
-delete_software('arrow')
+delete_software("arrow")
 }
 
 }
