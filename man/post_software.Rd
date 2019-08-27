@@ -4,23 +4,23 @@
 \alias{post_software}
 \title{Add new software}
 \usage{
-post_software(software.name, path)
+post_software(name, path)
 }
 \arguments{
-\item{software.name}{(character) Software name}
+\item{name}{(character) File name of software JSON (without file extension).}
 
-\item{path}{(list) Path to software JSON.}
+\item{path}{(character) Path to software JSON.}
 }
 \value{
-(message) Status message of operation.
+(message) Status message of POST operation.
 }
 \description{
 Add new software
 }
 \examples{
 \dontrun{
-sstr <- login()
-post_software('arrow', sstr, '/path/to/software')
+login()
+post_software("arrow", "/path/to/software/json")
 }
 
 }
