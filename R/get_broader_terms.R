@@ -1,4 +1,4 @@
-#' Get broader terms of an IMCR Vocabulary keyword
+#' Get broad terms of an IMCR Vocabulary keyword
 #'
 #' @param term
 #'   (character) IMCR Vocabulary keyword
@@ -11,10 +11,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' get_broader_terms("workflow planning")
+#' get_broad_terms("workflow planning")
 #' }
 #'
-get_broader_terms <- function(term) {
+get_broad_terms <- function(term) {
   
   # Set API endpoint
   rtematres::rtematres.options(
