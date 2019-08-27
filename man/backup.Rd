@@ -2,16 +2,22 @@
 % Please edit documentation in R/backup.R
 \name{backup}
 \alias{backup}
-\title{Back up IMCR JSON to path}
+\title{Back up all software metadata in the IMCR Portal}
 \usage{
 backup(path)
 }
 \arguments{
-\item{path}{(character) Path to where IMCR metadata will be written.}
+\item{path}{(character) Where IMCR metadata will be written.}
 }
 \value{
 (.json) JSON metadata files written to the specified \code{path}.
 }
 \description{
-Back up IMCR JSON to path
+Back up all software metadata in the IMCR Portal
+}
+\examples{
+\dontrun{
+backup("/path/to/backup/directory")
+}
+
 }

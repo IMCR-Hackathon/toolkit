@@ -1,7 +1,7 @@
-#' Back up IMCR JSON to path
+#' Back up all software metadata in the IMCR Portal
 #'
 #' @param path
-#'   (character) Path to where IMCR metadata will be written.
+#'   (character) Where IMCR metadata will be written.
 #'
 #' @return
 #'   (.json) JSON metadata files written to the specified \code{path}.
@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' backup('/Users/csmith/Desktop/imcr_metadata)
+#' backup("/path/to/backup/directory")
 #' }
 #'
 backup <- function(path){
@@ -25,14 +25,23 @@ backup <- function(path){
     )
   }
   
+  # Create directory
+  dir.create(paste0(path, "/", format(Sys.Date(), "%Y%m%d"), "_imcr_backup"))
+  
   # Write to file
   lapply(
     seq_along(imcr_json),
     function(x) {
-      message("Writing ", names(imcr_json[x]), ".json to ", path)
+      message("Writing ", names(imcr_json[x]), ".json")
       jsonlite::write_json(
         imcr_json[[x]],
-        path = paste0(path, "/", names(imcr_json[x]), ".json"),
+        path = paste0(
+          path, 
+          "/", 
+          format(Sys.Date(), "%Y%m%d"), 
+          "_imcr_backup/", 
+          names(imcr_json[x]), ".json"
+        ),
         auto_unbox = TRUE
       )
     }
