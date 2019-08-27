@@ -4,7 +4,7 @@
 \alias{sync_software_category}
 \title{Synchronize software category keywords with the IMCR vocabulary}
 \usage{
-sync_software_category(software)
+sync_software_category()
 }
 \value{
 (list) Updated software JSON as a list object.

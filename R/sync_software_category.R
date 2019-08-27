@@ -14,7 +14,7 @@
 #' sync_software_category()
 #' }
 #'
-sync_software_category <- function(software){
+sync_software_category <- function(){
   
   # Check for session string
   if (!exists("imcr_session_string")) {
