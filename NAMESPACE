@@ -3,6 +3,7 @@
 export(align_software_category)
 export(backup)
 export(delete_software)
+export(get_broader_terms)
 export(get_imcr_json)
 export(get_software_category)
 export(list_creators)
