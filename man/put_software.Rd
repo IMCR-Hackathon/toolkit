@@ -4,23 +4,23 @@
 \alias{put_software}
 \title{Update software}
 \usage{
-put_software(software.name, path)
+put_software(name, path)
 }
 \arguments{
-\item{software.name}{(character) Software name}
+\item{name}{(character) File name of software JSON (without file extension).}
 
-\item{path}{(list) Path to software JSON.}
+\item{path}{(character) Path to software JSON.}
 }
 \value{
-(message) Status message of operation.
+(message) Status message of PUT operation.
 }
 \description{
 Update software
 }
 \examples{
 \dontrun{
-sstr <- login()
-put_software('arrow', sstr, '/path/to/software')
+login()
+put_software("arrow", "/path/to/software/json")
 }
 
 }

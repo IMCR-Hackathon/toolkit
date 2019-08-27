@@ -1,22 +1,22 @@
 #' Update software
 #'
-#' @param software.name
-#'   (character) Software name
+#' @param name
+#'   (character) File name of software JSON (without file extension).
 #' @param path
-#'   (list) Path to software JSON.
+#'   (character) Path to software JSON.
 #'
 #' @return
-#'   (message) Status message of operation.
+#'   (message) Status message of PUT operation.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' sstr <- login()
-#' put_software('arrow', sstr, '/path/to/software')
+#' login()
+#' put_software("arrow", "/path/to/software/json")
 #' }
 #'
-put_software <- function(software.name, path){
+put_software <- function(name, path){
 
   # Check for session string
   if (!exists("imcr_session_string")){
@@ -29,16 +29,16 @@ put_software <- function(software.name, path){
   }
   
   # Get software JSON
-  metadata <- jsonlite::read_json(paste0(path, '/', software.name, '.json'))
+  metadata <- jsonlite::read_json(paste0(path, '/', name, '.json'))
 
   # Update software
   r <- httr::PUT(
     url = metadata[[1]]$id,
-    body = upload_file(paste0(path, '/', software.name, '.json')),
-    add_headers(`X-Ontosoft-Session` = imcr_session_string)
+    body = httr::upload_file(paste0(path, '/', name, '.json')),
+    httr::add_headers(`X-Ontosoft-Session` = imcr_session_string)
   )
 
   # Return status code
-  message('Status code: ', paste0(r$status_code))
+  message(paste0('Status code: ', r$status_code))
 
 }
