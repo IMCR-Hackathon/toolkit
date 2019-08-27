@@ -2,7 +2,7 @@
 % Please edit documentation in R/post_software.R
 \name{post_software}
 \alias{post_software}
-\title{Add new software}
+\title{Add new software to the IMCR Portal}
 \usage{
 post_software(name, path)
 }
@@ -15,7 +15,7 @@ post_software(name, path)
 (message) Status message of POST operation.
 }
 \description{
-Add new software
+Add new software to the IMCR Portal
 }
 \examples{
 \dontrun{

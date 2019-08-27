@@ -1,4 +1,4 @@
-#' Update software
+#' Update software in the IMCR Portal
 #'
 #' @param name
 #'   (character) File name of software JSON (without file extension).
@@ -18,7 +18,7 @@
 #'
 put_software <- function(name, path){
 
-  # Check for session string
+  # Check for imcr_session_string object
   if (!exists("imcr_session_string")){
     stop(
       paste0(
@@ -29,6 +29,9 @@ put_software <- function(name, path){
   }
   
   # Get software JSON
+  if (!file.exists(paste0(path, '/', name, '.json'))){
+    stop(paste0(name, " doesn't exist."))
+  }
   metadata <- jsonlite::read_json(paste0(path, '/', name, '.json'))
 
   # Update software

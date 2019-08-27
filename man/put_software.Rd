@@ -2,7 +2,7 @@
 % Please edit documentation in R/put_software.R
 \name{put_software}
 \alias{put_software}
-\title{Update software}
+\title{Update software in the IMCR Portal}
 \usage{
 put_software(name, path)
 }
@@ -15,7 +15,7 @@ put_software(name, path)
 (message) Status message of PUT operation.
 }
 \description{
-Update software
+Update software in the IMCR Portal
 }
 \examples{
 \dontrun{

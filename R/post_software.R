@@ -1,4 +1,4 @@
-#' Add new software
+#' Add new software to the IMCR Portal
 #'
 #' @param name
 #'   (character) File name of software JSON (without file extension).
@@ -18,7 +18,7 @@
 #'
 post_software <- function(name, path){
 
-  # Check for session string
+  # Check for imcr_session_string object
   if (!exists("imcr_session_string")){
     stop(
       paste0(
@@ -28,7 +28,10 @@ post_software <- function(name, path){
     )
   }
   
-  # Add software
+  # Add software JSON
+  if (!file.exists(paste0(path, '/', name, '.json'))){
+    stop(paste0(name, " doesn't exist."))
+  }
   r <- httr::POST(
     url = 'http://imcr.ontosoft.org/repository/software',
     body = httr::upload_file(paste0(path, '/', name, '.json')),
