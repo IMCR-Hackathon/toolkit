@@ -1,15 +1,5 @@
-#' Add/remove software category keywords
+#' Synchronize software category keywords with the IMCR vocabulary
 #'
-#' Only the narrowest terms need to be input, broader terms are automatically 
-#' added/removed.
-#'
-#' @param action
-#'   (character) Action to perform ("add" or "remove")
-#' @param software
-#'   (character) Software name
-#' @param keywords
-#'   (character) Keywords from the 
-#'   \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.
 #'
 #' @return
 #'   (list) Updated software JSON as a list object.
@@ -20,20 +10,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Get all IMCR JSON
-#' get_imcr_json()
-#' 
-#' # Login
 #' login()
-#' 
-#' # Add software category keywords
-#' update_software_category("add", 'arrow', c('quality control', 'import'))
-#' 
-#' # Remove software category keywords
-#' update_software_category("remove", 'arrow', c('quality control', 'import'))
+#' sync_software_category()
 #' }
 #'
-update_software_category <- function(action, software, keywords){
+sync_software_category <- function(software){
   
   # Check for session string
   if (!exists("imcr_session_string")) {
@@ -59,7 +40,7 @@ update_software_category <- function(action, software, keywords){
   json <- imcr_json[names(imcr_json) == software]
   cats <- json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]
   
-
+  
   # Add/remove user specified keywords
   if (action == 'add') {
     
@@ -96,14 +77,14 @@ update_software_category <- function(action, software, keywords){
     path = paste0(tempdir(), "/", software, ".json"),
     auto_unbox = TRUE
   )
-
+  
   # Upload
   put_software(
     software, 
     imcr_session_string, 
     paste0(tempdir(), "/", software, ".json")
   )
-
+  
   return(json[[1]])
   
 }

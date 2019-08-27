@@ -1,7 +1,15 @@
-#' Align software category keywords with the IMCR vocabulary
+#' Add/remove/replace software category keywords
 #'
-#' @param software
+#' Only the narrowest terms need to be input, broader terms are automatically 
+#' added/removed/replaced.
+#'
+#' @param action
+#'   (character) Action to perform ("add", "remove", "replace)
+#' @param softname
 #'   (character) Software name
+#' @param terms
+#'   (character) Keywords from the 
+#'   \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.
 #'
 #' @return
 #'   (list) Updated software JSON as a list object.
@@ -25,7 +33,7 @@
 #' update_software_category("remove", 'arrow', c('quality control', 'import'))
 #' }
 #'
-align_software_category <- function(software){
+modify_software_category <- function(action, software, keywords){
   
   # Check for session string
   if (!exists("imcr_session_string")) {
@@ -51,7 +59,7 @@ align_software_category <- function(software){
   json <- imcr_json[names(imcr_json) == software]
   cats <- json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]
   
-  
+
   # Add/remove user specified keywords
   if (action == 'add') {
     
@@ -88,14 +96,14 @@ align_software_category <- function(software){
     path = paste0(tempdir(), "/", software, ".json"),
     auto_unbox = TRUE
   )
-  
+
   # Upload
   put_software(
     software, 
     imcr_session_string, 
     paste0(tempdir(), "/", software, ".json")
   )
-  
+
   return(json[[1]])
   
 }
