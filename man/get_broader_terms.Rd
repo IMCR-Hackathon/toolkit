@@ -2,19 +2,19 @@
 % Please edit documentation in R/get_broader_terms.R
 \name{get_broader_terms}
 \alias{get_broader_terms}
-\title{Get broader terms for a given IMCR Vocabulary keyword}
+\title{Get broader terms of an IMCR Vocabulary keyword}
 \usage{
 get_broader_terms(term)
 }
 \arguments{
-\item{keyword}{(character) IMCR Vocabulary keyword}
+\item{term}{(character) IMCR Vocabulary keyword}
 }
 \value{
-(character) The input term and any broader terms related to it. A warning
-  is issued if the term was not found.
+(list) Named list of terms (including searched term) and corresponding
+  IDs. NA is returned for non-existant terms.
 }
 \description{
-Get broader terms for a given IMCR Vocabulary keyword
+Get broader terms of an IMCR Vocabulary keyword
 }
 \examples{
 \dontrun{

@@ -1,11 +1,11 @@
-#' Get broader terms for a given IMCR Vocabulary keyword
+#' Get broader terms of an IMCR Vocabulary keyword
 #'
-#' @param keyword
+#' @param term
 #'   (character) IMCR Vocabulary keyword
 #'
 #' @return
-#'   (character) The input term and any broader terms related to it. A warning
-#'   is issued if the term was not found.
+#'   (list) Named list of terms (including searched term) and corresponding
+#'   IDs. NA is returned for non-existant terms.
 #'
 #' @export
 #'
@@ -14,41 +14,45 @@
 #' get_broader_terms("workflow planning")
 #' }
 #'
-get_broader_terms <- function(term){
-  
-  # # Check for session string
-  # if (!exists("imcr_session_string")){
-  #   stop(
-  #     paste0(
-  #       "The object 'imcr_session_string' is missing from the global environment.",
-  #       "Create it with 'login()."
-  #     )
-  #   )
-  # }
-  
-  # Warn if term doesn't exist
+get_broader_terms <- function(term) {
   
   # Set API endpoint
-  rtematres.options(tematres_service_url = "http://vocab.lternet.edu/vocab/registry/services.php")
+  rtematres::rtematres.options(
+    tematres_service_url = "http://vocab.lternet.edu/vocab/registry/services.php"
+  )
   
-  # Search term and get ID
-  term <- "workflow planning"
-  r <- rtematres.api(task = "search", argument = term)
-  
-  # fetchUp ID to get broader terms. Top terms return "NA" when fetching up.
-  broadterms <- rtematres.api(task = "fetchUp", argument = as.numeric(r$id[r$term == term]))
-  
-  # # Get software JSON
-  # metadata <- jsonlite::read_json(paste0(path, '/', software.name, '.json'))
-  # 
-  # # Update software
-  # r <- httr::PUT(
-  #   url = metadata[[1]]$id,
-  #   body = upload_file(paste0(path, '/', software.name, '.json')),
-  #   add_headers(`X-Ontosoft-Session` = imcr_session_string)
-  # )
-  # 
-  # # Return status code
-  # message('Status code: ', paste0(r$status_code))
+  # Continue if term exists
+  code <- suppressWarnings(rtematres::rtematres.api.conversion.term_id(term))
+  if (!identical(code, logical(0))) {
+    
+    # Search term, get ID, then get broader terms.
+    r <- rtematres::rtematres.api(task = "search", argument = term)
+    terms <- rtematres::rtematres.api(
+      task = "fetchUp", 
+      argument = as.numeric(r$id[r$term == term])
+    )
+    
+    # Add term if missing from list of terms
+    if (!isTRUE(term %in% terms$term)) {
+      terms$id <- c(terms$id, code)
+      terms$term <- c(terms$term, term)
+    }
+    
+    # Remove NAs
+    terms$id <- terms$id[!is.na(terms$id)]
+    terms$term <- terms$term[!is.na(terms$term)]
+    
+  } else {
+    
+    # Return NAs if term doesn't exist
+    r <- rtematres::rtematres.api(task = "search", argument = term)
+    terms <- rtematres::rtematres.api(
+      task = "fetchUp", 
+      argument = as.numeric(r$id[r$term == term])
+    )
+    
+  }
+
+  return(terms)
   
 }
