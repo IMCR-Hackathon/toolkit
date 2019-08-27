@@ -11,6 +11,7 @@ Imports:
     ggplot2,
     httr,
     jsonlite,
+    rtematres,
     scales,
     xml2
 Suggests:
