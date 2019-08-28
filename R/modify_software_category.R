@@ -22,7 +22,6 @@
 #' get_imcr_json()
 #' modify_software_category("add", "arrow", c("quality control", "import"))
 #' modify_software_category("remove", "arrow", "quality control")
-#' modify_software_category("replace", "arrow", "import")
 #' }
 #'
 modify_software_category <- function(action, name, term){
@@ -47,46 +46,70 @@ modify_software_category <- function(action, name, term){
     )
   }
   
-  # Check if "term" is within the IMCR Vocabulary
-  
-  # Get software json and category keywords
-  json <- imcr_json[names(imcr_json) == name][[1]]
-  cats <- json$value[['http://ontosoft.org/software#hasSoftwareCategory']]
-  
-
-  # Add/remove user specified keywords
-  if (action == 'add') {
-    
-    newcats <- data.frame(
-      rep('EnumerationEntity', length(term)),
-      rep('', length(term)),
-      rep('', length(term)),
-      rep('http://ontosoft.org/software#SoftwareCategory', length(term)),
-      term,
-      term,
-      stringsAsFactors = FALSE
+  # Exclude any terms not within the IMCR Vocabulary and send warning.
+  term <- unlist(
+    lapply(
+      seq_along(term), 
+      function(x){
+        if (any(is.na(get_broad_terms(term[x])$term))) {
+          message(
+            paste0(
+              "'", 
+              term[x],
+              "'",
+              " is not apart of the IMCR Vocabulary and will not be added."
+            )
+          )
+        } else {
+          return(term[x])
+        }
+      }
     )
-    names(newcats) <- c("@type", "id", "name", "type", "label", "value")
-    cats <- rbind(cats, newcats)
-    json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
+  )
+  
+  # Continue if valid terms have been entered
+  if (!is.null(term)) {
     
-  } else if (action == 'remove') {
+    # Get software json and category keywords
+    json <- imcr_json[names(imcr_json) == name][[1]]
+    cats <- json$value[['http://ontosoft.org/software#hasSoftwareCategory']]
     
-    use_i <- cats$label %in% term
-    cats <- cats[!use_i, ]
-    if (all(dim(cats) == c(2,0))) {
-      json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
-    } else {
+    
+    # Add/remove user specified keywords
+    if (action == 'add') {
+      
+      newcats <- data.frame(
+        rep('EnumerationEntity', length(term)),
+        rep('', length(term)),
+        rep('', length(term)),
+        rep('http://ontosoft.org/software#SoftwareCategory', length(term)),
+        term,
+        term,
+        stringsAsFactors = FALSE
+      )
+      names(newcats) <- c("@type", "id", "name", "type", "label", "value")
+      cats <- rbind(cats, newcats)
       json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
+      
+    } else if (action == 'remove') {
+      
+      use_i <- cats$label %in% term
+      cats <- cats[!use_i, ]
+      if (all(dim(cats) == c(2,0))) {
+        json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
+      } else {
+        json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
+      }
+      
     }
     
+    # Update the imcr_json and imcr_json_mod_index objects
+    imcr_json[names(imcr_json) == name][[1]] <<- json
+    imcr_json_mod_index[names(imcr_json) == name] <<- TRUE
+    
+    # Send notification
+    message(paste0("Software category keywords of '", name, "' have been updated."))
+    
   }
-  
-  # Update the imcr_json and imcr_json_mod_index objects
-  imcr_json[names(imcr_json) == name][[1]] <<- json
-  imcr_json_mod_index[names(imcr_json) == name] <<- TRUE
 
-  # Send notification
-  message(paste0("Software category keywords of ", name, " have been updated."))
-  
 }
