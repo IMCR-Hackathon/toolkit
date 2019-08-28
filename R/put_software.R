@@ -54,7 +54,7 @@ put_software <- function(){
     # Write software to file
     jsonlite::write_json(
       imcr_json[[i]],
-      path = paste0(tempdir(), "/", name, ".json"),
+      path = paste0(tempdir(), "/", imcr_json[[i]]$label, ".json"),
       auto_unbox = TRUE,
       null = "null"
     )
@@ -62,7 +62,7 @@ put_software <- function(){
     # Update software
     r <- httr::PUT(
       url = imcr_json[[i]]$id,
-      body = httr::upload_file(paste0(tempdir(), '/', name, '.json')),
+      body = httr::upload_file(paste0(tempdir(), '/', imcr_json[[i]]$label, '.json')),
       httr::add_headers(`X-Ontosoft-Session` = imcr_session_string)
     )
     
@@ -70,7 +70,7 @@ put_software <- function(){
     message(
       paste0(
         "Updating IMCR Software ",
-        name,
+        imcr_json[[i]]$label,
         " Status code: ", 
         r$status_code
       )
