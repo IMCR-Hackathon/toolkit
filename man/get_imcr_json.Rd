@@ -10,6 +10,10 @@ get_imcr_json()
 (list) List of JSON metadata for all software in the IMCR Portal. This 
   object is named "imcr_json" and is returned to the global environment 
   where it is accessed by other \code{toolkit} functions.
+  (list) Logical index indicating whether any of the "imcr_json" objects 
+  have been modified. This object is named "imcr_json_mod_index" and is 
+  returned to the global environment where it is accessed by other 
+  \code{toolkit} functions.
 }
 \description{
 Get JSON of all software in the IMCR Portal

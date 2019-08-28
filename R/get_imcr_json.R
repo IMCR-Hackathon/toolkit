@@ -4,6 +4,10 @@
 #'   (list) List of JSON metadata for all software in the IMCR Portal. This 
 #'   object is named "imcr_json" and is returned to the global environment 
 #'   where it is accessed by other \code{toolkit} functions.
+#'   (list) Logical index indicating whether any of the "imcr_json" objects 
+#'   have been modified. This object is named "imcr_json_mod_index" and is 
+#'   returned to the global environment where it is accessed by other 
+#'   \code{toolkit} functions.
 #'
 #' @export
 #'
@@ -18,4 +22,5 @@ get_imcr_json <- function(){
   names(imcr_json) <- unlist(
     lapply(seq_along(imcr_json), function(x){imcr_json[[x]][['label']]}))
   imcr_json <<- imcr_json
+  imcr_json_mod_index <<- rep(FALSE, length(imcr_json))
 }
