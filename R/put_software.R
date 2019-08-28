@@ -1,5 +1,9 @@
 #' Update software in the IMCR Portal
 #'
+#' Modified software metadata (indicated by a "TRUE" in the 
+#' \code{imcr_json_mod_index} object) is written to \code{tempdir()} and 
+#' uploaded to the IMCR Portal.
+#'
 #' @return
 #'   (message) Status message of PUT operation.
 #'
@@ -8,6 +12,8 @@
 #' @examples
 #' \dontrun{
 #' login()
+#' get_imcr_json()
+#' modify_software_category("add", "arrow", c("quality control", "import"))
 #' put_software()
 #' }
 #'
