@@ -4,12 +4,7 @@
 \alias{put_software}
 \title{Update software in the IMCR Portal}
 \usage{
-put_software(name, path)
-}
-\arguments{
-\item{name}{(character) File name of software JSON (without file extension).}
-
-\item{path}{(character) Path to software JSON.}
+put_software()
 }
 \value{
 (message) Status message of PUT operation.
@@ -20,7 +15,7 @@ Update software in the IMCR Portal
 \examples{
 \dontrun{
 login()
-put_software("arrow", "/path/to/software/json")
+put_software()
 }
 
 }

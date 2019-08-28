@@ -1,109 +1,92 @@
-#' Add/remove/replace software category keywords
-#'
-#' Only the narrowest terms need to be input, broader terms are automatically 
-#' added/removed/replaced.
+#' Add/remove software category keywords
 #'
 #' @param action
-#'   (character) Action to perform ("add", "remove", "replace)
-#' @param softname
+#'   (character) "add" or "remove" keywords
+#' @param name
 #'   (character) Software name
-#' @param terms
+#' @param term
 #'   (character) Keywords from the 
 #'   \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.
 #'
 #' @return
-#'   (list) Updated software JSON as a list object.
-#'   (.json file) Updated software JSON written to the IMCR Portal, and to
-#'   \code{paste0(tempdir(), "/", software, ".json")}.
+#'   (list) Updated software JSON for the specified \code{name} and added to 
+#'   the \code{imcr_json} object in the global environment.
+#'   (logical) Updated \code{imcr_json_mod_index} object in the global 
+#'   environment, which indicates the specified \code{name} has been modified
+#'   and is used by PUT and POST functions.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Get all IMCR JSON
 #' get_imcr_json()
-#' 
-#' # Login
-#' login()
-#' 
-#' # Add software category keywords
-#' update_software_category("add", 'arrow', c('quality control', 'import'))
-#' 
-#' # Remove software category keywords
-#' update_software_category("remove", 'arrow', c('quality control', 'import'))
+#' modify_software_category("add", "arrow", c("quality control", "import"))
+#' modify_software_category("remove", "arrow", "quality control")
+#' modify_software_category("replace", "arrow", "import")
 #' }
 #'
-modify_software_category <- function(action, software, keywords){
-  
-  # Check for session string
-  if (!exists("imcr_session_string")) {
-    stop(
-      paste0(
-        "The object 'imcr_session_string' is missing from the global environment.",
-        "Create it with 'login()."
-      )
-    )
-  }
+modify_software_category <- function(action, name, term){
   
   # Check for imcr_json object
   if (!exists("imcr_json") | !is.list(imcr_json)) {
     stop(
       paste0(
         "The object 'imcr_json' is missing from the global environment.",
-        "Create it with 'get_json()."
+        "Create it with 'get_imcr_json()."
       )
     )
   }
   
-  # Get software categories
-  json <- imcr_json[names(imcr_json) == software]
-  cats <- json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]
+  # Check for imcr_json_mod_index object
+  if (!exists("imcr_json_mod_index") | !is.logical(imcr_json_mod_index)) {
+    stop(
+      paste0(
+        "The object 'imcr_json_mod_index' is missing from the global environment.",
+        "Create it with 'get_imcr_json()."
+      )
+    )
+  }
+  
+  # Check if "term" is within the IMCR Vocabulary
+  
+  # Get software json and category keywords
+  json <- imcr_json[names(imcr_json) == name][[1]]
+  cats <- json$value[['http://ontosoft.org/software#hasSoftwareCategory']]
   
 
   # Add/remove user specified keywords
   if (action == 'add') {
     
     newcats <- data.frame(
-      rep('EnumerationEntity', length(keywords)),
-      rep('', length(keywords)),
-      rep('', length(keywords)),
-      rep('http://ontosoft.org/software#SoftwareCategory', length(keywords)),
-      keywords,
-      keywords,
+      rep('EnumerationEntity', length(term)),
+      rep('', length(term)),
+      rep('', length(term)),
+      rep('http://ontosoft.org/software#SoftwareCategory', length(term)),
+      term,
+      term,
       stringsAsFactors = FALSE
     )
     names(newcats) <- c("@type", "id", "name", "type", "label", "value")
     cats <- rbind(cats, newcats)
-    json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
+    json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
     
   } else if (action == 'remove') {
     
-    newcats <- cats
-    newcats <- newcats[newcats$label != keywords]
-    if (all(dim(newcats) == c(2,0))) {
-      json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
+    use_i <- cats$label %in% term
+    cats <- cats[!use_i, ]
+    if (all(dim(cats) == c(2,0))) {
+      json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
     } else {
-      json[[1]]$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- newcats
+      json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
     }
     
   }
   
-  # Add/remove broader keywords
-  
-  # Write to file
-  jsonlite::write_json(
-    json[[1]],
-    path = paste0(tempdir(), "/", software, ".json"),
-    auto_unbox = TRUE
-  )
+  # Update the imcr_json and imcr_json_mod_index objects
+  imcr_json[names(imcr_json) == name][[1]] <<- json
+  imcr_json_mod_index[names(imcr_json) == name] <<- TRUE
 
-  # Upload
-  put_software(
-    software, 
-    imcr_session_string, 
-    paste0(tempdir(), "/", software, ".json")
-  )
-
-  return(json[[1]])
+  # Send notification
+  message(paste0("Software category keywords of ", name, " have been updated."))
   
 }

@@ -2,40 +2,34 @@
 % Please edit documentation in R/modify_software_category.R
 \name{modify_software_category}
 \alias{modify_software_category}
-\title{Add/remove/replace software category keywords}
+\title{Add/remove software category keywords}
 \usage{
-modify_software_category(action, software, keywords)
+modify_software_category(action, name, term)
 }
 \arguments{
-\item{action}{(character) Action to perform ("add", "remove", "replace)}
+\item{action}{(character) "add" or "remove" keywords}
 
-\item{softname}{(character) Software name}
+\item{name}{(character) Software name}
 
-\item{terms}{(character) Keywords from the 
+\item{term}{(character) Keywords from the 
 \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.}
 }
 \value{
-(list) Updated software JSON as a list object.
-  (.json file) Updated software JSON written to the IMCR Portal, and to
-  \code{paste0(tempdir(), "/", software, ".json")}.
+(list) Updated software JSON for the specified \code{name} and added to 
+  the \code{imcr_json} object in the global environment.
+  (logical) Updated \code{imcr_json_mod_index} object in the global 
+  environment, which indicates the specified \code{name} has been modified
+  and is used by PUT and POST functions.
 }
 \description{
-Only the narrowest terms need to be input, broader terms are automatically 
-added/removed/replaced.
+Add/remove software category keywords
 }
 \examples{
 \dontrun{
-# Get all IMCR JSON
 get_imcr_json()
-
-# Login
-login()
-
-# Add software category keywords
-update_software_category("add", 'arrow', c('quality control', 'import'))
-
-# Remove software category keywords
-update_software_category("remove", 'arrow', c('quality control', 'import'))
+modify_software_category("add", "arrow", c("quality control", "import"))
+modify_software_category("remove", "arrow", "quality control")
+modify_software_category("replace", "arrow", "import")
 }
 
 }
