@@ -29,6 +29,7 @@ Add/remove software category keywords
 get_imcr_json()
 modify_software_category("add", "arrow", c("quality control", "import"))
 modify_software_category("remove", "arrow", "quality control")
+modify_software_category("add", "arrow", c("quality control", "invalid keyword"))
 }
 
 }
