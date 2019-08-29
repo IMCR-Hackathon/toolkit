@@ -4,20 +4,26 @@
 \alias{sync_software_category}
 \title{Synchronize software category keywords with the IMCR vocabulary}
 \usage{
-sync_software_category()
+sync_software_category(name)
+}
+\arguments{
+\item{name}{(character) Software name}
 }
 \value{
-(list) Updated software JSON as a list object.
-  (.json file) Updated software JSON written to the IMCR Portal, and to
-  \code{paste0(tempdir(), "/", software, ".json")}.
+(list) Updated software JSON for the specified \code{name} and added to 
+  the \code{imcr_json} object in the global environment.
+  (logical) Updated \code{imcr_json_mod_index} object in the global 
+  environment, which indicates the specified \code{name} has been modified
+  and is used by PUT and POST functions.
 }
 \description{
 Synchronize software category keywords with the IMCR vocabulary
 }
 \examples{
 \dontrun{
-login()
-sync_software_category()
+get_imcr_json()
+modify_software_category("add", "arrow", "thesauri")
+sync_software_category("arrow")
 }
 
 }
