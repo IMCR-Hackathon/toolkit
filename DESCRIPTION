@@ -13,6 +13,7 @@ Imports:
     jsonlite,
     rtematres,
     scales,
+    stringr,
     xml2
 Suggests:
     testthat,
