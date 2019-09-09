@@ -1,0 +1,15 @@
+---
+title: "Backup IMCR metadata"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```
+library(toolkit)
+get_imcr_json()
+backup("/path/to/my/backup/location")
+```

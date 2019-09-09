@@ -10,6 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' get_imcr_json()
 #' backup("/path/to/backup/directory")
 #' }
 #'
