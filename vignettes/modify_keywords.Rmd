@@ -1,0 +1,61 @@
+---
+title: "Modify software category keywords"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Modify keywords of a software metadata record
+```
+# Load the toolkit
+library(toolkit)
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
+
+# Get all IMCR metadata (in JSON format).
+get_imcr_json()
+
+# Remove keyword.
+modify_software_category("remove", "softwareName", "reporting")
+
+# Add keywords.
+modify_software_category("add", "softwareName", c("data annotation", "indexing"))
+
+# Synchronize terms with the IMCR Vocabulary. Broader terms are automatically 
+# added and Non-existant terms are removed.
+sync_software_category("softwareName")
+
+# Upload metadata to the IMCR of all software whose keywords have been modified.
+put_software_category()
+
+# Logout
+logout()
+```
+
+## Synchronize software category keywords of all software metadata with the IMCR Vocabulary
+```
+# Load the toolkit
+library(toolkit)
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
+
+# Get all IMCR metadata (in JSON format).
+get_imcr_json()
+
+# Synchronize terms with the IMCR Vocabulary. Broader terms are automatically 
+# added and Non-existant terms are removed.
+sync_software_category()
+
+# Upload metadata to the IMCR of all software whose keywords have been modified.
+put_software_category()
+
+# Logout
+logout()
+```

@@ -17,6 +17,7 @@ Back up all software metadata in the IMCR Portal
 }
 \examples{
 \dontrun{
+get_imcr_json()
 backup("/path/to/backup/directory")
 }
 
