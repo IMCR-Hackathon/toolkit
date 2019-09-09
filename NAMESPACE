@@ -2,7 +2,6 @@
 
 export(backup)
 export(delete_software)
-export(get_broad_terms)
 export(get_imcr_json)
 export(get_software_category)
 export(list_creators)

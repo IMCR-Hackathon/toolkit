@@ -7,8 +7,6 @@
 #'   (list) Named list of terms (including searched term) and corresponding
 #'   IDs. NA is returned for non-existant terms.
 #'
-#' @export
-#'
 #' @examples
 #' \dontrun{
 #' get_broad_terms("workflow planning")
