@@ -8,27 +8,43 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Modify keywords of a software metadata record
+## Modify keyword(s) of a software metadata record
 ```
 # Load the toolkit
 library(toolkit)
 
-# Login to the IMCR with credentials allowing modification of target software.
-# Administrator accounts have access to all software metadata.
-login()
-
 # Get all IMCR metadata (in JSON format).
 get_imcr_json()
 
-# Remove keyword.
-modify_software_category("remove", "softwareName", "reporting")
+# Remove keyword
+modify_software_category(
+  action = "remove", 
+  name = "softwareName", 
+  term = "reporting"
+)
 
-# Add keywords.
-modify_software_category("add", "softwareName", c("data annotation", "indexing"))
+# Add keywords
+modify_software_category(
+  action = "add", 
+  name = "softwareName", 
+  term = c("data annotation", "indexing")
+)
+
+# Replace keyword (only one keyword can be replaced at a time).
+modify_software_category(
+  action = "replace", 
+  name = "softwareName", 
+  old.term = "deidentification",
+  new.term = "encryption"
+)
 
 # Synchronize terms with the IMCR Vocabulary. Broader terms are automatically 
 # added and Non-existant terms are removed.
 sync_software_category("softwareName")
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
 
 # Upload metadata to the IMCR of all software whose keywords have been modified.
 put_software_category()
@@ -37,21 +53,37 @@ put_software_category()
 logout()
 ```
 
-## Synchronize software category keywords of all software metadata with the IMCR Vocabulary
+## Modify keyword(s) of all IMCR software metadata records
 ```
 # Load the toolkit
 library(toolkit)
 
-# Login to the IMCR with credentials allowing modification of target software.
-# Administrator accounts have access to all software metadata.
-login()
-
 # Get all IMCR metadata (in JSON format).
 get_imcr_json()
 
+# Remove the keyword "reporting" from all IMCR software (if it exists)
+modify_software_category(
+  action = "remove", 
+  name = "all_imcr_software", 
+  term = "reporting"
+)
+
+# Replace the keyword "deidentification" in all IMCR software (if it exists) 
+# with the therm "encryption".
+modify_software_category(
+  action = "replace", 
+  name = "all_imcr_software", 
+  old.term = "deidentification",
+  new.term = "encryption"
+)
+
 # Synchronize terms with the IMCR Vocabulary. Broader terms are automatically 
 # added and Non-existant terms are removed.
-sync_software_category()
+sync_software_category("softwareName")
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
 
 # Upload metadata to the IMCR of all software whose keywords have been modified.
 put_software_category()
