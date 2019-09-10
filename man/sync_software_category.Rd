@@ -7,23 +7,31 @@
 sync_software_category(name)
 }
 \arguments{
-\item{name}{(character) Software name}
+\item{name}{(character) Software name(s). Use \code{name = "all_imcr_software"} 
+to synchronize all IMCR software category keywords.}
 }
 \value{
 (list) Updated software JSON for the specified \code{name} and added to 
   the \code{imcr_json} object in the global environment.
   (logical) Updated \code{imcr_json_mod_index} object in the global 
   environment, which indicates the specified \code{name} has been modified
-  and is used by PUT and POST functions.
+  and is used by \code{put_software()}.
+  (imcr_log.txt) A log file listing added and removed terms from each 
+  software.
 }
 \description{
 Synchronize software category keywords with the IMCR vocabulary
 }
 \examples{
 \dontrun{
+# Get all IMCR software JSON
 get_imcr_json()
-modify_software_category("add", "arrow", "thesauri")
+
+# Synchronize software category keywords for the "arrow" software.
 sync_software_category("arrow")
+
+# Synchronize software category keywords for all IMCR software.
+sync_software_category("all_imcr_software")
 }
 
 }
