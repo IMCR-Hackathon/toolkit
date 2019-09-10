@@ -120,6 +120,11 @@ modify_software_category <- function(action, name, term, old.term = NULL, new.te
         names(newcats) <- c("@type", "id", "name", "type", "label", "value")
         cats <- rbind(cats, newcats)
         json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
+        # Send notification
+        message(paste0("Software category keywords of '", name[i], "' have been added."))
+        # Update the imcr_json and imcr_json_mod_index objects
+        imcr_json[names(imcr_json) == name[i]][[1]] <<- json
+        imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
         
       } else if (action == 'remove') {
         
@@ -130,6 +135,11 @@ modify_software_category <- function(action, name, term, old.term = NULL, new.te
         } else {
           json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
         }
+        # Send notification
+        message(paste0("Software category keywords of '", name[i], "' have been removed."))
+        # Update the imcr_json and imcr_json_mod_index objects
+        imcr_json[names(imcr_json) == name[i]][[1]] <<- json
+        imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
         
       } else if (action == "replace") {
         
@@ -153,16 +163,14 @@ modify_software_category <- function(action, name, term, old.term = NULL, new.te
             json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
           }
         }
+        # Send notification
+        message(paste0("Software category keywords of '", name[i], "' have been replaced."))
+        # Update the imcr_json and imcr_json_mod_index objects
+        imcr_json[names(imcr_json) == name[i]][[1]] <<- json
+        imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
 
       }
-      
-      # Update the imcr_json and imcr_json_mod_index objects
-      imcr_json[names(imcr_json) == name[i]][[1]] <<- json
-      imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
-      
-      # Send notification
-      message(paste0("Software category keywords of '", name[i], "' have been updated."))
-      
+
     }
 
   }
