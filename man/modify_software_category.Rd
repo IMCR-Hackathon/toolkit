@@ -2,34 +2,53 @@
 % Please edit documentation in R/modify_software_category.R
 \name{modify_software_category}
 \alias{modify_software_category}
-\title{Add/remove software category keywords}
+\title{Add/remove/replace software category keywords}
 \usage{
-modify_software_category(action, name, term)
+modify_software_category(action, name, term, old.term = NULL,
+  new.term = NULL)
 }
 \arguments{
-\item{action}{(character) "add" or "remove" keywords}
+\item{action}{(character) Action to perform: "add", "remove", or "replace".}
 
-\item{name}{(character) Software name}
+\item{name}{(character) Software name(s). Use \code{name = "all_imcr_software"} 
+to apply the \code{action} to all IMCR software.}
 
-\item{term}{(character) Keywords from the 
+\item{term}{(character) Keyword(s) to "add" or "remove". If adding, use terms from the
 \href{http://vocab.lternet.edu/vocab/registry/index.php}{IMCR Controlled Vocabulary}.}
+
+\item{old.term}{(character) Keyword to be replaced (only used with 
+\code{action = "replace"}).}
+
+\item{new.term}{(character) Keyword to replace \code{old.term} (only used with 
+\code{action = "replace"}).}
 }
 \value{
 (list) Updated software JSON for the specified \code{name} and added to 
   the \code{imcr_json} object in the global environment.
   (logical) Updated \code{imcr_json_mod_index} object in the global 
   environment, which indicates the specified \code{name} has been modified
-  and is used by PUT and POST functions.
+  and is used by \code{put_software()}.
 }
 \description{
-Add/remove software category keywords
+Add/remove/replace software category keywords
 }
 \examples{
 \dontrun{
+# Get all IMCR software JSON metadata
 get_imcr_json()
+
+# Add terms
 modify_software_category("add", "arrow", c("quality control", "import"))
+
+# Remove terms
 modify_software_category("remove", "arrow", "quality control")
-modify_software_category("add", "arrow", c("quality control", "invalid keyword"))
+
+# Replace terms
+modify_software_category("replace", "arrow", old.term = "import", new.term = "loading")
+
+# Login to theIMCR and update modified software metadata
+login()
+put_software()
 }
 
 }
