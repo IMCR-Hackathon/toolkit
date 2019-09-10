@@ -91,9 +91,6 @@
     <li>
       <a href="../articles/modify_keywords.html">Modify software category keywords</a>
     </li>
-    <li>
-      <a href="../articles/overview.html">Vignette Title</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -130,7 +127,8 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>name</th>
-      <td><p>(character) Software name</p></td>
+      <td><p>(character) Software name(s). Use <code>name = "all_imcr_software"</code> 
+to synchronize all IMCR software category keywords.</p></td>
     </tr>
     </table>
     
@@ -140,14 +138,21 @@
   the <code>imcr_json</code> object in the global environment.
   (logical) Updated <code>imcr_json_mod_index</code> object in the global 
   environment, which indicates the specified <code>name</code> has been modified
-  and is used by PUT and POST functions.</p>
+  and is used by <code>put_software()</code>.
+  (imcr_log.txt) A log file listing added and removed terms from each 
+  software.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># Get all IMCR software JSON</span>
 <span class='fu'>get_imcr_json</span>()
-<span class='fu'>modify_software_category</span>(<span class='st'>"add"</span>, <span class='st'>"arrow"</span>, <span class='st'>"thesauri"</span>)
+
+<span class='co'># Synchronize software category keywords for the "arrow" software.</span>
 <span class='fu'>sync_software_category</span>(<span class='st'>"arrow"</span>)
+
+<span class='co'># Synchronize software category keywords for all IMCR software.</span>
+<span class='fu'>sync_software_category</span>(<span class='st'>"all_imcr_software"</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

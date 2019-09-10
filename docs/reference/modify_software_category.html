@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add/remove software category keywords — modify_software_category • toolkit</title>
+<title>Add/remove/replace software category keywords — modify_software_category • toolkit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Add/remove software category keywords — modify_software_category" />
+<meta property="og:title" content="Add/remove/replace software category keywords — modify_software_category" />
 
-<meta property="og:description" content="Add/remove software category keywords" />
+<meta property="og:description" content="Add/remove/replace software category keywords" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -91,9 +91,6 @@
     <li>
       <a href="../articles/modify_keywords.html">Modify software category keywords</a>
     </li>
-    <li>
-      <a href="../articles/overview.html">Vignette Title</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -112,34 +109,46 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add/remove software category keywords</h1>
+    <h1>Add/remove/replace software category keywords</h1>
     
     <div class="hidden name"><code>modify_software_category.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Add/remove software category keywords</p>
+    <p>Add/remove/replace software category keywords</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>modify_software_category</span>(<span class='no'>action</span>, <span class='no'>name</span>, <span class='no'>term</span>)</pre>
+    <pre class="usage"><span class='fu'>modify_software_category</span>(<span class='no'>action</span>, <span class='no'>name</span>, <span class='no'>term</span>, <span class='kw'>old.term</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>new.term</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>action</th>
-      <td><p>(character) "add" or "remove" keywords</p></td>
+      <td><p>(character) Action to perform: "add", "remove", or "replace".</p></td>
     </tr>
     <tr>
       <th>name</th>
-      <td><p>(character) Software name</p></td>
+      <td><p>(character) Software name(s). Use <code>name = "all_imcr_software"</code> 
+to apply the <code>action</code> to all IMCR software.</p></td>
     </tr>
     <tr>
       <th>term</th>
-      <td><p>(character) Keywords from the 
+      <td><p>(character) Keyword(s) to "add" or "remove". If adding, use terms from the
 <a href='http://vocab.lternet.edu/vocab/registry/index.php'>IMCR Controlled Vocabulary</a>.</p></td>
+    </tr>
+    <tr>
+      <th>old.term</th>
+      <td><p>(character) Keyword to be replaced (only used with 
+<code>action = "replace"</code>).</p></td>
+    </tr>
+    <tr>
+      <th>new.term</th>
+      <td><p>(character) Keyword to replace <code>old.term</code> (only used with 
+<code>action = "replace"</code>).</p></td>
     </tr>
     </table>
     
@@ -149,15 +158,26 @@
   the <code>imcr_json</code> object in the global environment.
   (logical) Updated <code>imcr_json_mod_index</code> object in the global 
   environment, which indicates the specified <code>name</code> has been modified
-  and is used by PUT and POST functions.</p>
+  and is used by <code>put_software()</code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># Get all IMCR software JSON metadata</span>
 <span class='fu'>get_imcr_json</span>()
+
+<span class='co'># Add terms</span>
 <span class='fu'>modify_software_category</span>(<span class='st'>"add"</span>, <span class='st'>"arrow"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"quality control"</span>, <span class='st'>"import"</span>))
+
+<span class='co'># Remove terms</span>
 <span class='fu'>modify_software_category</span>(<span class='st'>"remove"</span>, <span class='st'>"arrow"</span>, <span class='st'>"quality control"</span>)
-<span class='fu'>modify_software_category</span>(<span class='st'>"add"</span>, <span class='st'>"arrow"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"quality control"</span>, <span class='st'>"invalid keyword"</span>))
+
+<span class='co'># Replace terms</span>
+<span class='fu'>modify_software_category</span>(<span class='st'>"replace"</span>, <span class='st'>"arrow"</span>, <span class='kw'>old.term</span> <span class='kw'>=</span> <span class='st'>"import"</span>, <span class='kw'>new.term</span> <span class='kw'>=</span> <span class='st'>"loading"</span>)
+
+<span class='co'># Login to theIMCR and update modified software metadata</span>
+<span class='fu'>login</span>()
+<span class='fu'>put_software</span>()
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

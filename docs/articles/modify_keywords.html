@@ -58,9 +58,6 @@
     <li>
       <a href="../articles/modify_keywords.html">Modify software category keywords</a>
     </li>
-    <li>
-      <a href="../articles/overview.html">Vignette Title</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -78,7 +75,7 @@
     <div class="page-header toc-ignore">
       <h1>Modify software category keywords</h1>
             
-            <h4 class="date">2019-09-09</h4>
+            <h4 class="date">2019-09-10</h4>
       
       
       <div class="hidden name"><code>modify_keywords.Rmd</code></div>
@@ -87,34 +84,101 @@
 
     
     
+<div id="modify-keywords-of-a-software-metadata-record" class="section level2">
+<h2 class="hasAnchor">
+<a href="#modify-keywords-of-a-software-metadata-record" class="anchor"></a>Modify keyword(s) of a software metadata record</h2>
 <pre><code><a href="https://www.rdocumentation.org/packages/base/topics/library"># Load the toolkit
 library(toolkit)
-
-# Login to the IMCR with credentials allowing modification of target software.
-# Administrator accounts have access to all software metadata.
-login()
 
 # Get all IMCR metadata (in JSON format).
 get_imcr_json()
 
-# Remove keyword.
-modify_software_category("remove", "softwareName", "reporting")
+# Remove keyword
+modify_software_category(
+  action = "remove", 
+  name = "softwareName", 
+  term = "reporting"
+)
 
-# Add keywords.
-modify_software_category("add", "softwareName", c("data annotation", "indexing"))
+# Add keywords
+modify_software_category(
+  action = "add", 
+  name = "softwareName", 
+  term = c("data annotation", "indexing")
+)
+
+# Replace keyword (only one keyword can be replaced at a time).
+modify_software_category(
+  action = "replace", 
+  name = "softwareName", 
+  old.term = "deidentification",
+  new.term = "encryption"
+)
 
 # Synchronize terms with the IMCR Vocabulary. Broader terms are automatically 
 # added and Non-existant terms are removed.
 sync_software_category("softwareName")
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
 
 # Upload metadata to the IMCR of all software whose keywords have been modified.
 put_software_category()
 
 # Logout
 logout()</a></code></pre>
+</div>
+<div id="modify-keywords-of-all-imcr-software-metadata-records" class="section level2">
+<h2 class="hasAnchor">
+<a href="#modify-keywords-of-all-imcr-software-metadata-records" class="anchor"></a>Modify keyword(s) of all IMCR software metadata records</h2>
+<pre><code><a href="https://www.rdocumentation.org/packages/base/topics/library"># Load the toolkit
+library(toolkit)
+
+# Get all IMCR metadata (in JSON format).
+get_imcr_json()
+
+# Remove the keyword "reporting" from all IMCR software (if it exists)
+modify_software_category(
+  action = "remove", 
+  name = "all_imcr_software", 
+  term = "reporting"
+)
+
+# Replace the keyword "deidentification" in all IMCR software (if it exists) 
+# with the therm "encryption".
+modify_software_category(
+  action = "replace", 
+  name = "all_imcr_software", 
+  old.term = "deidentification",
+  new.term = "encryption"
+)
+
+# Synchronize terms with the IMCR Vocabulary. Broader terms are automatically 
+# added and Non-existant terms are removed.
+sync_software_category("softwareName")
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
+
+# Upload metadata to the IMCR of all software whose keywords have been modified.
+put_software_category()
+
+# Logout
+logout()</a></code></pre>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#modify-keywords-of-a-software-metadata-record">Modify keyword(s) of a software metadata record</a></li>
+      <li><a href="#modify-keywords-of-all-imcr-software-metadata-records">Modify keyword(s) of all IMCR software metadata records</a></li>
+      </ul>
+</div>
       </div>
 
 </div>
