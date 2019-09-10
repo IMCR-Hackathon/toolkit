@@ -17,10 +17,21 @@
 #' }
 #'
 get_imcr_json <- function(){
+  
+  # Don't overwrite imcr_json object if it exists
+  if (exists("imcr_json")) {
+    stop("The object 'imcr_json' exists and will not be overwritten.")
+  }
+  
+  # Get json
+  message("Getting IMCR JSON.")
   ids <- jsonlite::fromJSON("http://imcr.ontosoft.org/repository/software")$id
   imcr_json <- lapply(ids, jsonlite::fromJSON)
   names(imcr_json) <- unlist(
-    lapply(seq_along(imcr_json), function(x){imcr_json[[x]][['label']]}))
+    lapply(seq_along(imcr_json), function(x) {imcr_json[[x]][['label']]})
+  )
   imcr_json <<- imcr_json
   imcr_json_mod_index <<- rep(FALSE, length(imcr_json))
+  message("Done.")
+  
 }
