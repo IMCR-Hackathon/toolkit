@@ -84,8 +84,10 @@ sync_software_metadata <- function(name){
         cm_src <- codemetar::create_codemeta_cran(pkg)
         if (length(cm_src$codeRepository) > 0) {
           url_dev <- cm_src$codeRepository
-          if (isTRUE(stringr::str_detect(url_dev, "github"))) {
-            cm_dev <- gh_to_codemeta(url_dev)
+          if (!is.null(url_dev)) {
+            if (isTRUE(stringr::str_detect(url_dev, "github"))) {
+              cm_dev <- gh_to_codemeta(url_dev)
+            }
           }
         }
         
@@ -95,95 +97,39 @@ sync_software_metadata <- function(name){
         
       }
       
-      # Join codemeta of source archive and development repository.
-      if (exists("cm_src") & exists("cm_dev")) {
+      # Join codemeta of source archive and development repository. Procede
+      # only if codemeta exists, otherwise the OntoSoft software will 
+      # experience information loss.
+      if (any(c(exists("cm_src"), exists("cm_dev")))) {
         
-        if (stringr::str_detect(url, "cran") & 
-            stringr::str_detect(url_dev, "github")) {
-          cm <- join_rpkg_github(cm_src, cm_dev)
+        # Source and development exist
+        if (exists("cm_src") & exists("cm_dev")) {
+          
+          # CRAN and GitHub
+          if (stringr::str_detect(url, "cran") & 
+              stringr::str_detect(url_dev, "github")) {
+            cm <- join_rpkg_github(cm_src, cm_dev)
+          }
+          
+        # Only development exists
+        } else if (exists("cm_src") & !exists("cm_dev")) {
+          
+          # GitHub
+          if (stringr::str_detect(url, "github")) {
+            cm <- purrr::compact(cm_src) 
+          }
+          
         }
         
-      } else if (exists("cm_src") & !exists("cm_dev")) {
+        # Add codemeta to OntoSoft
+        json <- add_codemeta_to_ontosoft(ontosoft = json, cm = cm)
         
-        cm <- purrr::compact(cm_src)
-        
-      }
-      
-      # Add codemeta to OntoSoft
-      json <- add_codemeta_to_ontosoft(json, cm)
-      
-      # Update the imcr_json and imcr_json_mod_index objects
-      # imcr_json[names(imcr_json) == name[i]][[1]] <<- json
-      imcr_json[names(imcr_json) == name[i]][[1]] <- json
-      # imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
-      imcr_json_mod_index[names(imcr_json) == name[i]] <- TRUE
-
-    }
-
-    # Add/remove user specified keywords
-    if (action == 'add') {
-      
-      newcats <- data.frame(
-        rep('EnumerationEntity', length(term)),
-        rep('', length(term)),
-        rep('', length(term)),
-        rep('http://ontosoft.org/software#SoftwareCategory', length(term)),
-        term,
-        term,
-        stringsAsFactors = FALSE
-      )
-      names(newcats) <- c("@type", "id", "name", "type", "label", "value")
-      cats <- rbind(cats, newcats)
-      json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
-      # Send notification
-      message(paste0("Software category keywords of '", name[i], "' have been added."))
-      # Update the imcr_json and imcr_json_mod_index objects
-      imcr_json[names(imcr_json) == name[i]][[1]] <<- json
-      imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
-      
-    } else if (action == 'remove') {
-      
-      use_i <- cats$label %in% term
-      cats <- cats[!use_i, ]
-      if (all(dim(cats) == c(2,0))) {
-        json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
-      } else {
-        json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
-      }
-      # Send notification
-      message(paste0("Software category keywords of '", name[i], "' have been removed."))
-      # Update the imcr_json and imcr_json_mod_index objects
-      imcr_json[names(imcr_json) == name[i]][[1]] <<- json
-      imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
-      
-    } else if (action == "replace") {
-      
-      use_i <- cats$label %in% old.term
-      if (any(use_i)) {
-        cats <- cats[!use_i, ]
-        newcats <- data.frame(
-          rep('EnumerationEntity', length(term)),
-          rep('', length(term)),
-          rep('', length(term)),
-          rep('http://ontosoft.org/software#SoftwareCategory', length(term)),
-          term,
-          term,
-          stringsAsFactors = FALSE
-        )
-        names(newcats) <- c("@type", "id", "name", "type", "label", "value")
-        cats <- rbind(cats, newcats)
-        if (all(dim(cats) == c(2,0))) {
-          json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- list()
-        } else {
-          json$value[['http://ontosoft.org/software#hasSoftwareCategory']] <- cats
-        }
-        # Send notification
-        message(paste0("Software category keywords of '", name[i], "' have been replaced."))
         # Update the imcr_json and imcr_json_mod_index objects
         imcr_json[names(imcr_json) == name[i]][[1]] <<- json
         imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
+        
       }
-      
+
     }
     
   }
@@ -204,16 +150,16 @@ sync_software_metadata <- function(name){
 gh_to_codemeta <- function(github.url) {
   
   gh_owner <- stringr::str_extract(
-    url_dev, 
+    github.url, 
     "(?<=github.com/)[:graph:]*(?=/[:graph:]*$)"
   )
   
   gh_repo <- stringr::str_extract(
-    url_dev, 
+    github.url, 
     paste0(
       "(?<=", 
       stringr::str_extract(
-        url_dev, 
+        github.url, 
         "(?<=github.com/)[:graph:]*(?=/[:graph:]*$)"
       ), 
       "/).*"
@@ -230,6 +176,8 @@ gh_to_codemeta <- function(github.url) {
       "GitHub"
     )
   )
+  
+  cm_dev
   
 }
 
@@ -273,188 +221,230 @@ join_rpkg_github <- function(cm.rpkg, cm.github) {
 #'
 #' @param ontosoft
 #'   (ontosoft list) OntoSoft json list object
-#' @param codemeta 
+#' @param cm
 #'   (codemeta list) \code{codemeta} json list object
+#'   
+#' @details
+#'   Not all OntoSoft properties are implemented due to unique aspects of 
+#'   the IMCR use case, namely \code{hasSoftwareCategory} 
+#'   (this is reserved for IMCR Vocabulary Terms), \code{hasDependency}
+#'   (adds these software dependencies to the IMCR, which may or may not be 
+#'   within the IMCR scope), \code{requiresAverageMemory} (which isn't 
+#'   clearly supported by the OntoSoft API), \code{hasVersionReleaseDate},
+#'   (which is listed in the ontology but doesn't seem to be implemented), and
+#'   \code{hasName} (manually input by person registering the software).
+#'   \code{usedInPublication} is supported by the crosswalk but not yet 
+#'   implemented in this function.
 #'
 #' @return
 #'   (ontosoft list) OntoSoft json list object
 #'   
-add_codemeta_to_ontosoft <- function(ontosoft, codemeta) {
+add_codemeta_to_ontosoft <- function(ontosoft, cm) {
   
   # hasActiveDevelopment
-  # FIXME: Value can also originate from cm$developmentStatus, but is less preferred
-  # than cm$codeRepository
   val <- cm$codeRepository
+  if (is.null(val)) {
+    val <- cm$developmentStatus
+  }
   if (!is.null(val)) {
     df <- data.frame(
       'TextEntity', '', '', 'http://ontosoft.org/software#DevelopmentInformation',
       NA, val, stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasActiveDevelopment']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasActiveDevelopment']] <- df
   }
   
   # hasImplementationLanguage 
-  # FIXME: Format varies by metadata schema
+  # FIXME: Format varies by metadata schema. Can be more than one.
   val <- cm$programmingLanguage$name
   if (!is.null(val)) {
     df <- data.frame(
-      'EnumerationEntity', '', '', 'http://ontosoft.org/software#ProgrammingLanguage',
-      NA, val, stringsAsFactors = FALSE
+      rep('EnumerationEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#ProgrammingLanguage', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasImplementationLanguage']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasImplementationLanguage']] <- df
   }
-
-  # hasSoftwareCategory (this is reserved for IMCR Vocabulary Terms)
-  # hsc <- json$value[['http://ontosoft.org/software#hasSoftwareCategory']]$value
   
   # supportsOperatingSystem
   val <- cm$operatingSystem
   if (!is.null(val)) {
     df <- data.frame(
-      'EnumerationEntity', '', '', 'http://ontosoft.org/software#OperatingSystem',
-      NA, val, stringsAsFactors = FALSE
+      rep('EnumerationEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#OperatingSystem', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#supportsOperatingSystem']] <- df
+    ontosoft$value[['http://ontosoft.org/software#supportsOperatingSystem']] <- df
   }
   
   # hasCommitmentOfSupport
-  # FIXME: Can also originate from cm$issueTracker, which may or may not be
-  # preferred to cm$softwareHelp
   val <- cm$softwareHelp
+  if (is.null(val)) {
+    val <- cm$softwareHelp
+  }
   if (!is.null(val)) {
     df <- data.frame(
       'TextEntity', '', '', 'http://ontosoft.org/software#TextEntity',
       NA, val, stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasCommitmentOfSupport']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasCommitmentOfSupport']] <- df
   }
-  
-  # hasDependency
-  # DO NOT USE THIS, it adds these dependencies to the IMCR, and a lot
-  # of dependencies don't belong in the IMCR.
-  # val <- cm$softwareRequirements
-  # if (!is.null(val)) {
-  #   df <- data.frame(
-  #     'EnumerationEntity', '', '', 'http://ontosoft.org/software#Software',
-  #     NA, val, stringsAsFactors = FALSE
-  #   )
-  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
-  #   json$value[['http://ontosoft.org/software#hasDependency']] <- df
-  # }
   
   # hasSoftwareVersion
-  val <- cm$softwareVersion
-  if (!is.null(val)) {
-    df <- data.frame(
-      'EnumerationEntity', '', '', 'http://ontosoft.org/software#SoftwareVersion',
-      NA, val, stringsAsFactors = FALSE
-    )
-    names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasSoftwareVersion']] <- df
-  }
-  
-  # requiresAverageMemory
-  val <- cm$storageRequirements
-  units <- NA
-  if (!is.null(val)) {
-    df <- data.frame(
-      'MeasurementEntity', '', '', 'http://ontosoft.org/software#MeasurementEntity',
-      NA, val, units, stringsAsFactors = FALSE
-    )
-    names(df) <- c("@type", "id", "name", "type", "label", "value", "units")
-    json$value[['http://ontosoft.org/software#requiresAverageMemory']] <- df
-  }
-  
+  # FIXME: Performing a PUT operation to this property results in 
+  # erratic behavior.
+  # val <- c("2.2.2", "2.1.0")
+  # val <- cm$softwareVersion
+  # if (!is.null(val)) {
+  #   df <- data.frame(
+  #     rep('EnumerationEntity', length(val)),
+  #     rep('', length(val)),
+  #     rep(NA, length(val)),
+  #     rep('http://ontosoft.org/software#SoftwareVersion', length(val)),
+  #     val,
+  #     val,
+  #     stringsAsFactors = FALSE
+  #   )
+  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
+  #   ontosoft$value[['http://ontosoft.org/software#hasSoftwareVersion']] <- df
+  # }
+
   # hasRelevantDataSources
-  # FIXME: Can have multiple sources.
   val <- cm$supportingData
   if (!is.null(val)) {
     df <- data.frame(
-      'TextEntity', '', '', 'http://ontosoft.org/software#TextEntity',
-      NA, val, stringsAsFactors = FALSE
+      rep('TextEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#TextEntity', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasRelevantDataSources']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasRelevantDataSources']] <- df
   }
   
   # hasCreator
-  # FIXME: Can have multiple creators. Input formats may vary. Creator can also come
-  # from codemeta "creator".
+  # FIXME: Input formats may vary. Creator can also come from codemeta "creator".
   val <- cm$author
+  val <- unlist(
+    lapply(
+      seq_along(val),
+      function(x) {
+        paste0(val[[x]]$givenName, " ", val[[x]]$familyName)
+      }
+    )
+  )
   if (!is.null(val)) {
     df <- data.frame(
-      'EnumerationEntity', '', '', 'http://www.w3.org/ns/prov#Agent',
-      NA, val, stringsAsFactors = FALSE
+      rep('EnumerationEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://www.w3.org/ns/prov#Agent', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasCreator']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasCreator']] <- df
   }
   
   # hasMajorContributor
-  # FIXME: Can have multiple contributors. Input formats may vary.
+  # FIXME: Input formats may vary.
   val <- cm$contributor
+  val <- unlist(
+    lapply(
+      seq_along(val),
+      function(x) {
+        paste0(val[[x]]$givenName, " ", val[[x]]$familyName)
+      }
+    )
+  )
   if (!is.null(val)) {
     df <- data.frame(
-      'EnumerationEntity', '', '', 'http://www.w3.org/ns/prov#Agent',
-      NA, val, stringsAsFactors = FALSE
+      rep('EnumerationEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://www.w3.org/ns/prov#Agent', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasMajorContributor']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasMajorContributor']] <- df
   }
-  
-  # hasVersionReleaseDate
-  # FIXME: Does this property exist in OntoSoft? If so the "type" in the 
-  # code below needs updating.
-  # val <- cm$dateModified
-  # if (!is.null(val)) {
-  #   df <- data.frame(
-  #     'EnumerationEntity', '', '', 'http://www.w3.org/ns/prov#Agent',
-  #     NA, val, stringsAsFactors = FALSE
-  #   )
-  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
-  #   json$value[['http://ontosoft.org/software#hasVersionReleaseDate']] <- df
-  # }
   
   # hasFundingSources
-  # FIXME: Can be more than one. Can also originate from cm$funding, which has
+  # FIXME: Can also originate from cm$funding, which has
   # equal weight as cm$funder.
-  val <- cm$funder
-  if (!is.null(val)) {
-    df <- data.frame(
-      'TextEntity', '', '', 'http://ontosoft.org/software#TextEntity',
-      NA, val, stringsAsFactors = FALSE
-    )
-    names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasFundingSources']] <- df
-  }
+  # FIXME: Performing a PUT operation to this property results in 
+  # erratic behavior.
+  # Does the property need to be cleared first?
+  # val <- c("It has these funding sources", "and these too")
+  # val <- cm$funder
+  # if (!is.null(val)) {
+  #   df <- data.frame(
+  #     rep('TextEntity', length(val)),
+  #     rep('', length(val)),
+  #     rep('', length(val)),
+  #     rep('http://ontosoft.org/software#TextEntity', length(val)),
+  #     rep(NA, length(val)),
+  #     val,
+  #     stringsAsFactors = FALSE
+  #   )
+  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
+  #   ontosoft$value[['http://ontosoft.org/software#hasFundingSources']] <- df
+  # }
   
   # hasDomainKeywords
-  # FAILED
   # FIXME: Can be more than one.
-  val <- cm$keywords
-  if (!is.null(val)) {
-    df <- data.frame(
-      'TextEntity', '', '', 'http://ontosoft.org/software#Keywords',
-      NA, val, stringsAsFactors = FALSE
-    )
-    names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasDomainKeywords']] <- df
-  }
+  # FIXME: Performing a PUT operation to this property results in 
+  # erratic behavior.
+  # TESTME FAILED
+  # val <- c("Limnology", "Oceanography")
+  # val <- cm$keywords
+  # if (!is.null(val)) {
+  #   df <- data.frame(
+  #     rep('TextEntity', length(val)),
+  #     rep('', length(val)),
+  #     rep('', length(val)),
+  #     rep('http://ontosoft.org/software#Keywords', length(val)),
+  #     rep(NA, length(val)),
+  #     val,
+  #     stringsAsFactors = FALSE
+  #   )
+  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
+  #   ontosoft$value[['http://ontosoft.org/software#hasDomainKeywords']] <- df
+  # }
   
   # hasLicense
-  # FIXME: Can be more than one.
+  # FIXME: Parse out license name if possible
   val <- cm$license
   if (!is.null(val)) {
     df <- data.frame(
-      'EnumerationEntity', '', '', 'http://ontosoft.org/software#License',
-      NA, val, stringsAsFactors = FALSE
+      rep('EnumerationEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#License', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasLicense']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasLicense']] <- df
   }
   
   # hasPublisher
@@ -465,19 +455,18 @@ add_codemeta_to_ontosoft <- function(ontosoft, codemeta) {
       NA, val, stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasPublisher']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasPublisher']] <- df
   }
   
   # hasShortDescription
-  # FAILED
   val <- cm$description
   if (!is.null(val)) {
     df <- data.frame(
       'TextEntity', '', '', 'http://ontosoft.org/software#TextEntity',
-      NA, val, stringsAsFactors = FALSE
+      val, val, stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasShortDescription']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasShortDescription']] <- df
   }
   
   # hasUniqueId
@@ -488,23 +477,28 @@ add_codemeta_to_ontosoft <- function(ontosoft, codemeta) {
       NA, val, stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasUniqueId']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasUniqueId']] <- df
   }
-  
-  # hasName  (this is reserved for IMCR Vocabulary Terms)
-  # json$value[['http://ontosoft.org/software#hasName']]
 
   # hasEmailContact
   # FIXME: Can be more than one
-  val <- cm$email
-  if (!is.null(val)) {
-    df <- data.frame(
-      'TextEntity', '', '', 'http://ontosoft.org/software#TextEntity',
-      NA, val, stringsAsFactors = FALSE
-    )
-    names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasEmailContact']] <- df
-  }
+  # FIXME: Performing a PUT operation to this property results in 
+  # erratic behavior.
+  # val <- c("emailcontact@email.com", "anothercontact@email.com")
+  # val <- cm$email
+  # if (!is.null(val)) {
+  #   df <- data.frame(
+  #     rep('TextEntity', length(val)),
+  #     rep('', length(val)),
+  #     rep('', length(val)),
+  #     rep('http://ontosoft.org/software#TextEntity', length(val)),
+  #     rep(NA, length(val)),
+  #     val,
+  #     stringsAsFactors = FALSE
+  #   )
+  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
+  #   ontosoft$value[['http://ontosoft.org/software#hasEmailContact']] <- df
+  # }
 
   # hasInstallationInstructions
   val <- cm$buildInstructions
@@ -514,21 +508,10 @@ add_codemeta_to_ontosoft <- function(ontosoft, codemeta) {
       NA, val, stringsAsFactors = FALSE
     )
     names(df) <- c("@type", "id", "name", "type", "label", "value")
-    json$value[['http://ontosoft.org/software#hasInstallationInstructions']] <- df
+    ontosoft$value[['http://ontosoft.org/software#hasInstallationInstructions']] <- df
   }
   
-  # usedInPublication
-  # FIXME: 2 parts to the publication. Can be more than one publication.
-  # This has not yet been implemented...
-  # val <- cm$referencePublication
-  # if (!is.null(val)) {
-  #   df <- data.frame(
-  #     'ComplexEntity', '', '', 'http://ontosoft.org/software#Citation',
-  #     NA, val, stringsAsFactors = FALSE
-  #   )
-  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
-  #   json$value[['http://ontosoft.org/software#usedInPublication']] <- df
-  # }
+  ontosoft
   
 }
 

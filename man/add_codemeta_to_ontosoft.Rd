@@ -4,16 +4,28 @@
 \alias{add_codemeta_to_ontosoft}
 \title{Add codemeta to ontosoft metadata}
 \usage{
-add_codemeta_to_ontosoft(ontosoft, codemeta)
+add_codemeta_to_ontosoft(ontosoft, cm)
 }
 \arguments{
 \item{ontosoft}{(ontosoft list) OntoSoft json list object}
 
-\item{codemeta}{(codemeta list) \code{codemeta} json list object}
+\item{cm}{(codemeta list) \code{codemeta} json list object}
 }
 \value{
 (ontosoft list) OntoSoft json list object
 }
 \description{
 Add codemeta to ontosoft metadata
+}
+\details{
+Not all OntoSoft properties are implemented due to unique aspects of 
+  the IMCR use case, namely \code{hasSoftwareCategory} 
+  (this is reserved for IMCR Vocabulary Terms), \code{hasDependency}
+  (adds these software dependencies to the IMCR, which may or may not be 
+  within the IMCR scope), \code{requiresAverageMemory} (which isn't 
+  clearly supported by the OntoSoft API), \code{hasVersionReleaseDate},
+  (which is listed in the ontology but doesn't seem to be implemented), and
+  \code{hasName} (manually input by person registering the software).
+  \code{usedInPublication} is supported by the crosswalk but not yet 
+  implemented in this function.
 }
