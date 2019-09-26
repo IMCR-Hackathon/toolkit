@@ -23,10 +23,22 @@ get_imcr_json <- function(){
     stop("The object 'imcr_json' exists and will not be overwritten.")
   }
   
-  # Get json
+  # Get json and create the json modification index
   message("Getting IMCR JSON.")
   ids <- jsonlite::fromJSON("http://imcr.ontosoft.org/repository/software")$id
-  imcr_json <- lapply(ids, jsonlite::fromJSON)
+  imcr_json <- lapply(
+    ids, 
+    function(x) {
+      json <- try(jsonlite::fromJSON(x), silent = TRUE)
+      if (class(json) == 'try-error') {
+        NA_character_
+      } else {
+        json
+      }
+    }
+  )
+  is_unreadable <- is.na(imcr_json)
+  imcr_json <- imcr_json[!is_unreadable]
   names(imcr_json) <- unlist(
     lapply(seq_along(imcr_json), function(x) {imcr_json[[x]][['label']]})
   )

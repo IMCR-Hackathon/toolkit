@@ -176,3 +176,33 @@ modify_software_category <- function(action, name, term, old.term = NULL, new.te
   }
 
 }
+
+
+
+
+#' Get Software Category
+#'
+#' Get software category keywords.
+#'
+#' @param json
+#'   (list) Software metadata in JSON format
+#'
+#' @return
+#'   (list) Software keywords
+#'
+#' @examples
+#' \dontrun{
+#' json <- get_json('http://imcr.ontosoft.org/repository/software')
+#' parse_keywords(json)
+#' }
+#'
+get_software_category <- function(json){
+  return(
+    lapply(
+      seq_along(json),
+      function(x){
+        json[[x]]$value[['http://ontosoft.org/software#hasSoftwareCategory']]$label
+      }
+    )
+  )
+}

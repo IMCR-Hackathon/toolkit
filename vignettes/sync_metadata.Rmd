@@ -1,0 +1,36 @@
+---
+title: "Synchronize software metadata"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Synchronize IMCR software metadata with corresponding repository metadata (only CRAN and GitHub are currently supported).
+
+Software name, category keywords, and a URL to the software in an accepted repository is required ([see instructions](http://wiki.esipfed.org/index.php/Best_practices#Register)).
+```
+# Load the toolkit
+library(toolkit)
+
+# Get all IMCR metadata (in JSON format).
+get_imcr_json()
+
+# Synchronize the metadata of one software
+sync_software_metadata(name = "antiword")
+
+# Synchronize the metadata of all software
+sync_software_metadata(name = "all_imcr_software")
+
+# Login to the IMCR with credentials allowing modification of target software.
+# Administrator accounts have access to all software metadata.
+login()
+
+# Upload metadata to the IMCR of all software whose keywords have been modified.
+put_software_category()
+
+# Logout
+logout()
+```

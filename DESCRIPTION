@@ -1,6 +1,6 @@
 Package: toolkit
 Title: An R package for maintaining the IMCR
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: person("Colin", "Smith", email = "colin.smith@wisc.edu", role = c("aut", "cre"), comment = c(ORCID = '0000-0003-2261-9931'))
 Description: A toolkit for IMCR maintainers
 Depends: R (>= 3.4.0)
@@ -8,9 +8,12 @@ License: MIT License
 Encoding: UTF-8
 LazyData: true
 Imports:
+    codemetar,
     ggplot2,
+    gh,
     httr,
     jsonlite,
+    purrr,
     rtematres,
     scales,
     stringr,
@@ -19,5 +22,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown
+Remotes:
+    clnsmth/codemetar
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
