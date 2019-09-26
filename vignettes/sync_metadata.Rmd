@@ -8,9 +8,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Synchronize IMCR software metadata with corresponding repository metadata (e.g. CRAN, PyPI, GitHub)
+## Synchronize IMCR software metadata with corresponding repository metadata (only CRAN and GitHub are currently supported).
 
-Software name, category keywords, and a URL to the software in an accepted repository is required ([see instructions](http://wiki.esipfed.org/index.php/Best_practices#IMCR_.28new.29)).
+Software name, category keywords, and a URL to the software in an accepted repository is required ([see instructions](http://wiki.esipfed.org/index.php/Best_practices#Register)).
 ```
 # Load the toolkit
 library(toolkit)
@@ -18,10 +18,11 @@ library(toolkit)
 # Get all IMCR metadata (in JSON format).
 get_imcr_json()
 
-# Synchronize the metadata of one package
+# Synchronize the metadata of one software
 sync_software_metadata(name = "antiword")
 
-...
+# Synchronize the metadata of all software
+sync_software_metadata(name = "all_imcr_software")
 
 # Login to the IMCR with credentials allowing modification of target software.
 # Administrator accounts have access to all software metadata.

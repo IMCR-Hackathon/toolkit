@@ -1,19 +1,6 @@
 #' Synchronize software with source metadata
 #' 
-#' Uses two URLs listed in the intial, manually entered, OntoSoft metadata 
-#' record. These are: (1.) The official archive in which the software is 
-#' published (e.g. 
-#' CRAN (https://cran.r-project.org/web/packages/codemetar/index.html), 
-#' PyPI (https://pypi.org/project/certbot-dns-route53/)) listed under the 
-#' OntoSoft object property \code{hasProjectWebsite} (i.e. in Portal Speak
-#' \code{"Identify" > "Locate" > "Is there a project website for the software?"}), 
-#' and (2.) The official location of where the software is being 
-#' developmed/maintained (e.g. GitHub (https://github.com/ropensci/antiword)) 
-#' listed under the OntoSoft object property \code{hasActiveDevelopment} (i.e. 
-#' in Portal Speak \code{"Update" > "Contribute" > "How is the software being 
-#' developed or maintained?"}). Software metadata is extracted from these 
-#' two sources cross walked through the \code{codemetar} crosswalk  and used 
-#' to update the content of the OntoSoft metadata record.
+#' Currently supports CRAN and GitHub.
 #'
 #' @param name
 #'   (character) Software name(s). Use \code{name = "all_imcr_software"} 
@@ -26,11 +13,31 @@
 #'   environment, which indicates the specified \code{name} has been modified
 #'   and is used by \code{put_software()}.
 #'
+#' @details
+#'   This function looks for two URLs listed in the intial, manually entered, 
+#'   OntoSoft metadata record. These are: (1.) The official archive in which 
+#'   the software is published (e.g. 
+#'   CRAN (https://cran.r-project.org/web/packages/codemetar/index.html)) listed 
+#'   under the OntoSoft property \code{hasProjectWebsite} (i.e. in the field
+#'   \code{"Is there a project website for the software?"}), and (2.) The 
+#'   official location of where the software is being developmed/maintained 
+#'   (e.g. GitHub (https://github.com/ropensci/antiword)) listed under the 
+#'   OntoSoft object property \code{hasActiveDevelopment} (i.e. in the field 
+#'   \code{"How is the software being developed or maintained?"}). Software 
+#'   metadata is extracted from these two sources and combinded through the 
+#'   \code{codemeta} crosswalk then added to the OntoSoft metadata. Information 
+#'   not supported by \code{codemeta} is supplied directly to the OntoSoft 
+#'   metadata.
+#'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' 
+#' get_imcr_json()
+#' sync_software_metadata("arrow")
+#' login()
+#' put_software()
+#' logout()
 #' }
 #'
 sync_software_metadata <- function(name){
@@ -77,7 +84,8 @@ sync_software_metadata <- function(name){
     if (!is.null(url)) {
       
       # Get codemeta for source archive and development repository. 
-      # FIXME: Only supported dev repo is GitHub.
+      # FIXME: Only supported source archive is CRAN.
+      # FIXME: Only supported development repo is GitHub.
       if (isTRUE(stringr::str_detect(url, "cran"))) {
         
         pkg <- stringr::str_extract(url, "(?<=/)[:alnum:]*(?=_)")
@@ -97,38 +105,29 @@ sync_software_metadata <- function(name){
         
       }
       
-      # Join codemeta of source archive and development repository. Procede
-      # only if codemeta exists, otherwise the OntoSoft software will 
-      # experience information loss.
-      if (any(c(exists("cm_src"), exists("cm_dev")))) {
+      # Join codemeta of source archive and development repository otherwise 
+      # remove NULL elements of development repository.
+      if (exists("cm_src") & exists("cm_dev")) {
         
-        # Source and development exist
-        if (exists("cm_src") & exists("cm_dev")) {
-          
-          # CRAN and GitHub
-          if (stringr::str_detect(url, "cran") & 
-              stringr::str_detect(url_dev, "github")) {
-            cm <- join_rpkg_github(cm_src, cm_dev)
-          }
-          
-        # Only development exists
-        } else if (exists("cm_src") & !exists("cm_dev")) {
-          
-          # GitHub
-          if (stringr::str_detect(url, "github")) {
-            cm <- purrr::compact(cm_src) 
-          }
-          
+        if (stringr::str_detect(url, "cran") & 
+            stringr::str_detect(url_dev, "github")) {
+          cm <- join_rpkg_github(cm_src, cm_dev)
         }
         
-        # Add codemeta to OntoSoft
-        json <- add_codemeta_to_ontosoft(ontosoft = json, cm = cm)
+      } else if (exists("cm_src") & !exists("cm_dev")) {
         
-        # Update the imcr_json and imcr_json_mod_index objects
-        imcr_json[names(imcr_json) == name[i]][[1]] <<- json
-        imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
+        if (stringr::str_detect(url, "github")) {
+          cm <- purrr::compact(cm_src) 
+        }
         
       }
+      
+      # Add codemeta to OntoSoft
+      json <- add_codemeta_to_ontosoft(ontosoft = json, cm = cm)
+      
+      # Update the imcr_json and imcr_json_mod_index objects
+      imcr_json[names(imcr_json) == name[i]][[1]] <<- json
+      imcr_json_mod_index[names(imcr_json) == name[i]] <<- TRUE
 
     }
     
@@ -240,7 +239,7 @@ join_rpkg_github <- function(cm.rpkg, cm.github) {
 #'   (ontosoft list) OntoSoft json list object
 #'   
 add_codemeta_to_ontosoft <- function(ontosoft, cm) {
-  
+
   # hasActiveDevelopment
   val <- cm$codeRepository
   if (is.null(val)) {
@@ -303,23 +302,23 @@ add_codemeta_to_ontosoft <- function(ontosoft, cm) {
   }
   
   # hasSoftwareVersion
-  # FIXME: Performing a PUT operation to this property results in 
+  # FIXME: Performing a PUT operation to this property results in
   # erratic behavior.
   # val <- c("2.2.2", "2.1.0")
-  # val <- cm$softwareVersion
-  # if (!is.null(val)) {
-  #   df <- data.frame(
-  #     rep('EnumerationEntity', length(val)),
-  #     rep('', length(val)),
-  #     rep(NA, length(val)),
-  #     rep('http://ontosoft.org/software#SoftwareVersion', length(val)),
-  #     val,
-  #     val,
-  #     stringsAsFactors = FALSE
-  #   )
-  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
-  #   ontosoft$value[['http://ontosoft.org/software#hasSoftwareVersion']] <- df
-  # }
+  val <- cm$softwareVersion
+  if (!is.null(val)) {
+    df <- data.frame(
+      rep('EnumerationEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#SoftwareVersion', length(val)),
+      val,
+      val,
+      stringsAsFactors = FALSE
+    )
+    names(df) <- c("@type", "id", "name", "type", "label", "value")
+    ontosoft$value[['http://ontosoft.org/software#hasSoftwareVersion']] <- df
+  }
 
   # hasRelevantDataSources
   val <- cm$supportingData
@@ -413,22 +412,21 @@ add_codemeta_to_ontosoft <- function(ontosoft, cm) {
   # FIXME: Can be more than one.
   # FIXME: Performing a PUT operation to this property results in 
   # erratic behavior.
-  # TESTME FAILED
   # val <- c("Limnology", "Oceanography")
-  # val <- cm$keywords
-  # if (!is.null(val)) {
-  #   df <- data.frame(
-  #     rep('TextEntity', length(val)),
-  #     rep('', length(val)),
-  #     rep('', length(val)),
-  #     rep('http://ontosoft.org/software#Keywords', length(val)),
-  #     rep(NA, length(val)),
-  #     val,
-  #     stringsAsFactors = FALSE
-  #   )
-  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
-  #   ontosoft$value[['http://ontosoft.org/software#hasDomainKeywords']] <- df
-  # }
+  val <- cm$keywords
+  if (!is.null(val)) {
+    df <- data.frame(
+      rep('TextEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#Keywords', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
+    )
+    names(df) <- c("@type", "id", "name", "type", "label", "value")
+    ontosoft$value[['http://ontosoft.org/software#hasDomainKeywords']] <- df
+  }
   
   # hasLicense
   # FIXME: Parse out license name if possible
@@ -485,20 +483,20 @@ add_codemeta_to_ontosoft <- function(ontosoft, cm) {
   # FIXME: Performing a PUT operation to this property results in 
   # erratic behavior.
   # val <- c("emailcontact@email.com", "anothercontact@email.com")
-  # val <- cm$email
-  # if (!is.null(val)) {
-  #   df <- data.frame(
-  #     rep('TextEntity', length(val)),
-  #     rep('', length(val)),
-  #     rep('', length(val)),
-  #     rep('http://ontosoft.org/software#TextEntity', length(val)),
-  #     rep(NA, length(val)),
-  #     val,
-  #     stringsAsFactors = FALSE
-  #   )
-  #   names(df) <- c("@type", "id", "name", "type", "label", "value")
-  #   ontosoft$value[['http://ontosoft.org/software#hasEmailContact']] <- df
-  # }
+  val <- cm$email
+  if (!is.null(val)) {
+    df <- data.frame(
+      rep('TextEntity', length(val)),
+      rep('', length(val)),
+      rep('', length(val)),
+      rep('http://ontosoft.org/software#TextEntity', length(val)),
+      rep(NA, length(val)),
+      val,
+      stringsAsFactors = FALSE
+    )
+    names(df) <- c("@type", "id", "name", "type", "label", "value")
+    ontosoft$value[['http://ontosoft.org/software#hasEmailContact']] <- df
+  }
 
   # hasInstallationInstructions
   val <- cm$buildInstructions
@@ -511,6 +509,33 @@ add_codemeta_to_ontosoft <- function(ontosoft, cm) {
     ontosoft$value[['http://ontosoft.org/software#hasInstallationInstructions']] <- df
   }
   
+  # Use GitHub metadata not supported by codemeta
+  if (stringr::str_detect(url_dev, "github")) {
+    
+    cm_dev <- gh::gh(
+      "/repos/:owner/:repo", 
+      owner = stringr::str_extract(
+        url_dev, 
+        "(?<=github.com/)[:graph:]*(?=/[:graph:]*$)"
+      ), 
+      repo = stringr::str_extract(
+        url_dev, 
+        paste0(
+          "(?<=", 
+          stringr::str_extract(
+            github.url, 
+            "(?<=github.com/)[:graph:]*(?=/[:graph:]*$)"
+          ), 
+          "/).*"
+        )
+      ) 
+    )
+    
+    # Supplement OntoSoft metadta with GitHub meta here ...
+
+  }
+  
+  # Return
   ontosoft
   
 }

@@ -18,24 +18,31 @@ to update all IMCR software metadata.}
   and is used by \code{put_software()}.
 }
 \description{
-Uses two URLs listed in the intial, manually entered, OntoSoft metadata 
-record. These are: (1.) The official archive in which the software is 
-published (e.g. 
-CRAN (https://cran.r-project.org/web/packages/codemetar/index.html), 
-PyPI (https://pypi.org/project/certbot-dns-route53/)) listed under the 
-OntoSoft object property \code{hasProjectWebsite} (i.e. in Portal Speak
-\code{"Identify" > "Locate" > "Is there a project website for the software?"}), 
-and (2.) The official location of where the software is being 
-developmed/maintained (e.g. GitHub (https://github.com/ropensci/antiword)) 
-listed under the OntoSoft object property \code{hasActiveDevelopment} (i.e. 
-in Portal Speak \code{"Update" > "Contribute" > "How is the software being 
-developed or maintained?"}). Software metadata is extracted from these 
-two sources cross walked through the \code{codemetar} crosswalk  and used 
-to update the content of the OntoSoft metadata record.
+Currently supports CRAN and GitHub.
+}
+\details{
+This function looks for two URLs listed in the intial, manually entered, 
+  OntoSoft metadata record. These are: (1.) The official archive in which 
+  the software is published (e.g. 
+  CRAN (https://cran.r-project.org/web/packages/codemetar/index.html)) listed 
+  under the OntoSoft property \code{hasProjectWebsite} (i.e. in the field
+  \code{"Is there a project website for the software?"}), and (2.) The 
+  official location of where the software is being developmed/maintained 
+  (e.g. GitHub (https://github.com/ropensci/antiword)) listed under the 
+  OntoSoft object property \code{hasActiveDevelopment} (i.e. in the field 
+  \code{"How is the software being developed or maintained?"}). Software 
+  metadata is extracted from these two sources and combinded through the 
+  \code{codemeta} crosswalk then added to the OntoSoft metadata. Information 
+  not supported by \code{codemeta} is supplied directly to the OntoSoft 
+  metadata.
 }
 \examples{
 \dontrun{
-
+get_imcr_json()
+sync_software_metadata("arrow")
+login()
+put_software()
+logout()
 }
 
 }
