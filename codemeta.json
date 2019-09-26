@@ -8,7 +8,7 @@
   "description": "A toolkit for IMCR maintainers",
   "name": "toolkit: An R package for maintaining the IMCR",
   "license": "MIT License",
-  "version": "0.0.0.9000",
+  "version": "1.0.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
