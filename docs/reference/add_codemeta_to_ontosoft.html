@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Delete software from the IMCR Portal — delete_software • toolkit</title>
+<title>Add codemeta to ontosoft metadata — add_codemeta_to_ontosoft • toolkit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Delete software from the IMCR Portal — delete_software" />
+<meta property="og:title" content="Add codemeta to ontosoft metadata — add_codemeta_to_ontosoft" />
 
-<meta property="og:description" content="Delete software from the IMCR Portal" />
+<meta property="og:description" content="Add codemeta to ontosoft metadata" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,40 +112,50 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Delete software from the IMCR Portal</h1>
+    <h1>Add codemeta to ontosoft metadata</h1>
     
-    <div class="hidden name"><code>delete_software.Rd</code></div>
+    <div class="hidden name"><code>add_codemeta_to_ontosoft.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Delete software from the IMCR Portal</p>
+    <p>Add codemeta to ontosoft metadata</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>delete_software</span>(<span class='no'>name</span>)</pre>
+    <pre class="usage"><span class='fu'>add_codemeta_to_ontosoft</span>(<span class='no'>ontosoft</span>, <span class='no'>cm</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>(character) Name of software</p></td>
+      <th>ontosoft</th>
+      <td><p>(ontosoft list) OntoSoft json list object</p></td>
+    </tr>
+    <tr>
+      <th>cm</th>
+      <td><p>(codemeta list) <code>codemeta</code> json list object</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>(message) Status message of DELETE operation.</p>
+    <p>(ontosoft list) OntoSoft json list object</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Not all OntoSoft properties are implemented due to unique aspects of 
+  the IMCR use case, namely <code>hasSoftwareCategory</code> 
+  (this is reserved for IMCR Vocabulary Terms), <code>hasDependency</code>
+  (adds these software dependencies to the IMCR, which may or may not be 
+  within the IMCR scope), <code>requiresAverageMemory</code> (which isn't 
+  clearly supported by the OntoSoft API), <code>hasVersionReleaseDate</code>,
+  (which is listed in the ontology but doesn't seem to be implemented), and
+  <code>hasName</code> (manually input by person registering the software).
+  <code>usedInPublication</code> is supported by the crosswalk but not yet 
+  implemented in this function.</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>get_imcr_json</span>()
-<span class='fu'>login</span>()
-<span class='fu'>delete_software</span>(<span class='st'>"arrow"</span>)
-<span class='co'># }</span><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -153,9 +163,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+
+      <li><a href="#details">Details</a></li>
+          </ul>
 
   </div>
 </div>
